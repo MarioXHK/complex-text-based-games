@@ -30,29 +30,29 @@ int main() {
         cout << p << " ";
     cout << endl;
     
-    for (int q = 0; q < 10; q++) {
+    for (int q = 0; q < 10; q++) {//Creates snowflakes of ever increasing sizes
         cout << endl;
         Snowflake(q);
         cout << endl;
     }
     cout << "Goodbye, Loops!" << endl;
 }
-
+//The function of how to do snowflakes!
 void Snowflake(int stuff) {
     int eb = stuff * 2;
     for (int h = eb; h >= 0; h -= 2) {
         for (int j = h/2; j < eb-1; j++)
-            cout << " ";
+            cout << " ";//the spaces in front
         cout << "_\\/";
         for (int i = 0; i < h; i++)
-            cout << " ";
+            cout << " ";//the spaces in the middle
         cout << "\\/_" << endl;
-    }
+    }//The upper snowflake
     for (int i = 0; i <= stuff; i++)
         cout << "_\\";
     for (int i = 0; i <= stuff; i++)
         cout << "/_";
-    cout << endl;
+    cout << endl;//THE MIDDLE
     for (int i = 0; i <= stuff; i++)
         cout << " /";
     for (int i = 0; i <= stuff; i++)
@@ -65,5 +65,5 @@ void Snowflake(int stuff) {
         for (int i = 0; i < k; i++)
             cout << " ";
         cout << "/\\_" << endl;
-    }
+    }//the lower snowflake
 }
