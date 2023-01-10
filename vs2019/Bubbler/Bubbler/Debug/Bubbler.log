@@ -1,0 +1,10 @@
+﻿  Source.cpp
+C:\Users\671766\Documents\code\vs2019\Bubbler\Bubbler\Source.cpp(9,42): error C2059: syntax error: ']'
+C:\Users\671766\Documents\code\vs2019\Bubbler\Bubbler\Source.cpp(9,49): error C2059: syntax error: ')'
+C:\Users\671766\Documents\code\vs2019\Bubbler\Bubbler\Source.cpp(10,36): error C2059: syntax error: ';'
+C:\Users\671766\Documents\code\vs2019\Bubbler\Bubbler\Source.cpp(12,10): error C2143: syntax error: missing ';' before '<<'
+C:\Users\671766\Documents\code\vs2019\Bubbler\Bubbler\Source.cpp(12,10): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+C:\Users\671766\Documents\code\vs2019\Bubbler\Bubbler\Source.cpp(13,1): error C2059: syntax error: '}'
+C:\Users\671766\Documents\code\vs2019\Bubbler\Bubbler\Source.cpp(13,1): error C2143: syntax error: missing ';' before '}'
+C:\Users\671766\Documents\code\vs2019\Bubbler\Bubbler\Source.cpp(15,26): error C2143: syntax error: missing ';' before '{'
+C:\Users\671766\Documents\code\vs2019\Bubbler\Bubbler\Source.cpp(15,26): error C2447: '{': missing function header (old-style formal list?)
