@@ -1,0 +1,6 @@
+﻿  Source.cpp
+C:\Users\671766\Documents\code\vs2019\Ping\Ping\Source.cpp(24,21): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\671766\Documents\code\vs2019\Ping\Ping\Source.cpp(25,21): warning C4305: 'initializing': truncation from 'double' to 'float'
+C:\Users\671766\Documents\code\vs2019\Ping\Ping\Source.cpp(60,23): warning C4305: '=': truncation from 'double' to 'float'
+C:\Users\671766\Documents\code\vs2019\Ping\Ping\Source.cpp(64,24): warning C4305: '=': truncation from 'double' to 'float'
+  Ping.vcxproj -> C:\Users\671766\Documents\code\vs2019\Ping\Debug\Ping.exe
