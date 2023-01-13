@@ -21,9 +21,10 @@ int main() {
 
     float ballX = 500;
     float ballY = 300;
-    float xVel = .01;
-    float yVel = .01;
-
+    float xVel = .02f;
+    float yVel = .02f;
+    int p1s = 0;
+    int p2s = 0;
     sf::CircleShape ball(25);
     ball.setFillColor(sf::Color(127, 0, 255));
     ball.setPosition(ballX, ballY);
@@ -56,16 +57,37 @@ int main() {
         }
         //paddle collision
         if (ballX - 25 < paddle1.getPosition().x && ballY > paddle1.getPosition().y && ballY < paddle1.getPosition().y + 100) {
-            cout << "paddle1 collision!" << endl;
-            xVel = .01;
+            //cout << "paddle1 collision!" << endl;
+            if (xVel < 0) {
+                xVel *= -1.1;
+                yVel *= 1.1;
+            }
         }
         if (ballX + 25 > paddle2.getPosition().x && ballY > paddle2.getPosition().y && ballY < paddle2.getPosition().y + 100) {
-            cout << "paddle2 collision!" << endl;
-            xVel = -.01;
+            //cout << "paddle2 collision!" << endl;
+            if (xVel > 0) {
+                xVel *= -1.1;
+                yVel *= 1.1;
+            }
         }
         ballX += xVel;
         ballY += yVel;
         ball.setPosition(ballX, ballY);
+        if (ballX < 0 || ballX > 1000) {
+            if (ballX < 0) {
+                p1s++;
+            }
+            else {
+                p2s++;
+            }
+            xVel = .02f;
+            yVel = .02f;
+            ballX = 500;
+            ballY = 300;
+            
+            cout << p1s << " | " << p2s << endl;
+        }
+
         //render section-----------------------------------------
         renderWindow.clear(); //wipes screen, without this things smear
         renderWindow.draw(paddle1); //you gotta drew each object
