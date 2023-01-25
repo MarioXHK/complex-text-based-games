@@ -15,7 +15,7 @@ playery = 720
 pewx = playerx
 pewy = playery
 vx = 0
-speedto = 20
+speedto = 30
 cory = False
 corycooldown = 0
 #pngs?
@@ -24,6 +24,8 @@ alienback = pygame.image.load("back.png")
 alienback2 = pygame.image.load("backagain.png")
 alienmid = pygame.image.load("mid.png")
 alienmid2 = pygame.image.load("midagain.png")
+alienfront = pygame.image.load("front.png")
+alienfront2 = pygame.image.load("frontagain.png")
 keys = [False,False,False]
 stuckin = True
 #emlny
@@ -72,18 +74,30 @@ class alien:
         if self.frame:
             if self.type == "back":
                 screen.blit(alienback, (self.xpos,self.ypos))
+            elif self.type == "front":
+                screen.blit(alienfront, (self.xpos-8,self.ypos))
             else:
                 screen.blit(alienmid, (self.xpos-6,self.ypos))
         else:
             if self.type == "back":
                 screen.blit(alienback2, (self.xpos,self.ypos))
+            elif self.type == "front":
+                screen.blit(alienfront2, (self.xpos-8,self.ypos))
             else:
                 screen.blit(alienmid2, (self.xpos-6,self.ypos))
-spacespiders = [alien("back",64,128)]
+spacespiders = [alien("back",64,64)]
+
+
 for f in range(1,12):
-    spacespiders.append(alien("back", (f*64)+64, 128, f*64))
-for f in range(12):
-    spacespiders.append(alien("middle", (f*64)+64, 256, f*64))
+    spacespiders.append(alien("back", (f*64)+64, 64, f*64))
+for p in range(2):
+    for f in range(12):
+        spacespiders.append(alien("middle", (f*64)+64, 192-(64*p), f*64))
+for p in range(2):
+    for f in range(12):
+        spacespiders.append(alien("front", (f*64)+64, 320-(64*p), f*64))
+
+
 class shoot:
     def __init__(self,enemy = False,xpos = 0,ypos = 0, atchto = 0,):
         self.enemy = enemy
@@ -111,7 +125,7 @@ class shoot:
             else:
                 self.ypos -= self.power
         if self.enemy:
-            if playery < self.ypos + 32 and self.xpos + 8 > playerx and self.xpos < playerx + 32:
+            if playery < self.ypos + 32 and playery > self.ypos and self.xpos + 8 > playerx and self.xpos < playerx + 32:
                 doExit = True
             if (self.xpos >= playerx and self.xpos <= playerx + 32) and self.ypos >= playery:
                 self.ypos = 1000
@@ -119,7 +133,7 @@ class shoot:
                 self.power = 0
         else:
             for i in range(len(spacespiders)):
-                if spacespiders[i].ypos + 32 > self.ypos and self.xpos + 4 > spacespiders[i].xpos and self.xpos < spacespiders[i].xpos + 32 and self.ypos > playery:
+                if spacespiders[i].ypos < self.ypos + 32 and spacespiders[i].ypos > self.ypos and self.xpos + 4 > spacespiders[i].xpos and self.xpos < spacespiders[i].xpos + 32 and self.ypos < playery and spacespiders[i].live == True:
                     spacespiders[i].live = False
                     self.power = 0
                     
@@ -171,13 +185,13 @@ while not doExit:
     else:
         vx = 0
     if keys[2]:
-        fire[0].pew(16)
+        fire[0].pew(20)
     #moving stuffff-==-=--==-=-=-= ???????????????!!!!!!!!!!!!!!!!!!!!!!!!!!
     
     
     for d in range(len(spacespiders)):
         if spacespiders[d].live:
-            if random.randrange(100 + (len(spacespiders)*20)) == 0:
+            if random.randrange(1000 ) == 0:
                 fire[d+1 ].pew(12)
             
     
