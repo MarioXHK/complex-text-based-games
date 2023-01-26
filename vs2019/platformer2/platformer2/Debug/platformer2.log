@@ -1,0 +1,5 @@
+﻿  platformer2.cpp
+C:\Users\671766\Documents\code\vs2019\platformer2\platformer2\platformer2.cpp(13,36): warning C4244: 'argument': conversion from 'const float' to 'unsigned int', possible loss of data
+C:\Users\671766\Documents\code\vs2019\platformer2\platformer2\platformer2.cpp(92,22): warning C4305: '*=': truncation from 'double' to 'float'
+C:\Users\671766\Documents\code\vs2019\platformer2\platformer2\platformer2.cpp(94,22): warning C4305: '*=': truncation from 'double' to 'float'
+  platformer2.vcxproj -> C:\Users\671766\Documents\code\vs2019\platformer2\Debug\platformer2.exe
