@@ -127,7 +127,7 @@ int main() {
     kyle og(0);
     cout << "4 Kyles have spawned in the area\n";
     bool death = true;
-    int health;
+    char health;
     char option = 'f';
     while (death) {
         og.printing();
@@ -137,7 +137,7 @@ int main() {
         cout << "Choose which Kyle to interact with." << endl;
         cin >> health;
         switch (health) {
-        case 0:
+        case '0':
             cout << "What would you like to do with the Orignal Kyle?" << endl << "(e)at, (s)leep, (p)lay, or (w)ork?" << endl;
             cin >> option;
             switch (option) {
@@ -160,7 +160,7 @@ int main() {
                 cout << "That is not an option\n";
             }
             break;
-        case 1:
+        case '1':
             cout << "What would you like to do with the Mia Kyle?" << endl << "(e)at, (s)leep, (p)lay, or (w)ork?" << endl;
             cin >> option;
             switch (option) {
@@ -183,7 +183,7 @@ int main() {
                 cout << "That is not an option\n";
             }
             break;
-        case 2:
+        case '2':
             cout << "What would you like to do with the Sonic fan Kyle?" << endl << "(e)at, (s)leep, (p)lay, or (w)ork?" << endl;
             cin >> option;
             switch (option) {
@@ -206,7 +206,7 @@ int main() {
                 cout << "That is not an option\n";
             }
             break;
-        case 3:
+        case '3':
             cout << "What would you like to do with the Cooking Kyle?" << endl << "(e)at, (s)leep, (p)lay, or (w)ork?" << endl;
             cin >> option;
             switch (option) {
@@ -228,6 +228,10 @@ int main() {
             default:
                 cout << "That is not an option\n";
             }
+            break;
+        case 'q':
+            cout << "Goodbye." << endl;
+            option = 'q';
             break;
         default:
             cout << "There is no Kyle with that number, try again!\n";
