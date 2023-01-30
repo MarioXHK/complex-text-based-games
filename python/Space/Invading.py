@@ -112,6 +112,7 @@ class shoot:
         global playerx
         global playery
         global doExit
+        global shield
         if not self.power > 0:
             if self.enemy:
                 self.xpos = spacespiders[self.atchto].xpos + 12
@@ -124,7 +125,15 @@ class shoot:
                 self.ypos += self.power
             else:
                 self.ypos -= self.power
-        if self.enemy:
+        
+        for i in range(len(shield)):
+            if shield[i].ypos < self.ypos + 32 and shield[i].ypos > self.ypos and self.xpos + 4 > shield[i].xpos and self.xpos < shield[i].xpos + 32 and self.ypos < playery and shield[i].health > 0:
+                shield[i].health -= 1
+                self.power = 0
+            
+            
+        
+        if self.enemy:#The script that tells who to murder
             if playery < self.ypos + 32 and playery > self.ypos and self.xpos + 8 > playerx and self.xpos < playerx + 32:
                 doExit = True
             if (self.xpos >= playerx and self.xpos <= playerx + 32) and self.ypos >= playery:
@@ -145,12 +154,33 @@ class shoot:
                 pygame.draw.rect(screen, (255, 0, 0), (self.xpos, self.ypos, 8, 32))
             else:
                 pygame.draw.rect(screen, (255, 255, 255), (self.xpos, self.ypos, 4, 32))
+
+
 fire = [shoot()]
 for g in range(len(spacespiders)):
     fire.append(shoot(True,0,0,g))
     print(g)
-
-
+    
+    
+class barrier:
+    def __init__(self,xpos = 0,ypos = 0):
+        self.xpos = xpos
+        self.ypos = ypos
+        self.health = 5
+    def rendie(self):
+        color = self.health*50
+        if self.health > 0:
+            pygame.draw.rect(screen, (0, color, 0), (self.xpos, self.ypos, 32, 32))
+shield = []
+def blocker(x,y):
+    global shield
+    for k in range(2):
+        for l in range(4):
+            shield.append(barrier((l*32)+x,(k*32)+y))
+blocker(64,576)
+blocker(320,576)
+blocker(576,576)
+blocker(832,576)
 #gaem loop
 while not doExit:
     
@@ -188,13 +218,15 @@ while not doExit:
         fire[0].pew(20)
     #moving stuffff-==-=--==-=-=-= ???????????????!!!!!!!!!!!!!!!!!!!!!!!!!!
     
-    
+    wedone = True
     for d in range(len(spacespiders)):
         if spacespiders[d].live:
             if random.randrange(1000 ) == 0:
                 fire[d+1 ].pew(12)
+        wedone = False
             
-    
+    if wedone:
+        doexit = True
     
     playerx += vx
     
@@ -221,6 +253,8 @@ while not doExit:
     #rendererrererer=========================================================================0
     screen.fill((0,0,0)) #wipe screen so it doesn't smear
     screen.blit(defender, (playerx,playery))
+    for i in range(len(shield)):
+        shield[i].rendie()
     for i in range(len(spacespiders)):
         if spacespiders[i].live:
             spacespiders[i].rendish()
