@@ -16,13 +16,13 @@ vx = 0
 vy = 0
 #variables to control wave beam
 beam = False
-beamx = [0,0]
-beamy = [0,0]
-angle = [0,0]
-A = [10,70]
-B = [.2,.15]
-C = [0,0]
-D = [0,0]
+beamx = [0,0,0,0,0,0]
+beamy = [0,0,0,0,0,0]
+angle = [0,0,0,0,0,0]
+A = [20,70,20,20,20,10]
+B = [.2,.2,.5,.2,.2,1]
+C = [0,0,0,5,0,10]
+D = [0,0,0,0,10,-10]
 
 #ship image load
 ship = pygame.image.load("ship.png") #artwork credit: Mr. Mo
@@ -64,14 +64,12 @@ while PlayingGame:
         
   #PHYSICS SECTION-------------------------------------------------------------
   if beam is True:
-      angle[0]+=1 #rotate angle
-      beamx[0] = xpos+angle[0]*5 #this handles how fast the beam moves to the right
-      beamy[0] = A[0]*sin(B[0]*(angle[0]-C[0]))+D[0] #this handles the shape and size of the wave
-      angle[1]+=1
-      beamx[1] = xpos+angle[1]*5
-      beamy[1] = A[1]*sin(B[1]*(angle[1]-C[1]))+D[1]
+      for i in range(len(angle)):
+          angle[i]+=1 #rotate angle
+          beamx[i] = xpos+angle[i]*5 #this handles how fast the beam moves to the right
+          beamy[i] = A[i]*sin(B[i]*(angle[i]-C[i]))+D[i] #this handles the shape and size of the wave
   else:
-      angle = [0,0]
+      angle = [0,0,0,0,0,0]
         
   #update player position by adding velocity to position      
   xpos += vx
@@ -89,6 +87,10 @@ while PlayingGame:
   if beam is True:
       pygame.draw.circle(gamescreen, (200, 0, 100), (beamx[0]+10, beamy[0]+ypos+20), 5)
       pygame.draw.circle(gamescreen, (200, 200, 0), (beamx[1]+10, beamy[1]+ypos+20), 5)
+      pygame.draw.circle(gamescreen, (0, 200, 0), (beamx[2]+10, beamy[2]+ypos+20), 5)
+      pygame.draw.circle(gamescreen, (0, 100, 200), (beamx[3]+10, beamy[3]+ypos+20), 5)
+      pygame.draw.circle(gamescreen, (100, 0, 200), (beamx[4]+10, beamy[4]+ypos+20), 5)
+      pygame.draw.circle(gamescreen, (200, 100, 0), (beamx[5]+10, beamy[5]+ypos+20), 5)
       
   pygame.display.flip()
 
