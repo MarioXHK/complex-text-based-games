@@ -1,4 +1,5 @@
 import random
+umm = True
 def what(name):
     ohfu = random.randrange(1,101)
     if ohfu < 25:
@@ -9,7 +10,9 @@ def what(name):
         print("oh wow a pokemon!")
     else:
         print("OH", name, "it's me, WALLY!")
+        return False
+    return True
 print("Enter ur name")
 player = input()
-for i in range(10):
-    what(player)
+while umm:
+    umm = what(player)
