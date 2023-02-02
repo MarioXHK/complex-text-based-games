@@ -18,6 +18,8 @@ vx = 0
 speedto = 30
 cory = False
 corycooldown = 0
+score = 0
+lives = 0
 #pngs?
 defender = pygame.image.load("defender.png")
 alienback = pygame.image.load("back.png")
@@ -106,13 +108,16 @@ class shoot:
         self.atchto = atchto
         self.power = 0
     def pew(self,power):
-        self.power = power
+        if self.power >= 0:
+            self.power = power
     def moving(self):
         global spacespiders
         global playerx
         global playery
         global doExit
         global shield
+        global lives
+        global score
         if not self.power > 0:
             if self.enemy:
                 self.xpos = spacespiders[self.atchto].xpos + 12
@@ -126,16 +131,25 @@ class shoot:
             else:
                 self.ypos -= self.power
         
-        for i in range(len(shield)):
+        for i in range(len(shield)):#All shots can destroy shields, and they prioritize shields over other stuffs
             if shield[i].ypos < self.ypos + 32 and shield[i].ypos > self.ypos and self.xpos + 4 > shield[i].xpos and self.xpos < shield[i].xpos + 32 and self.ypos < playery and shield[i].health > 0:
                 shield[i].health -= 1
                 self.power = 0
+                if not self.enemy:
+                    self.xpos = playerx + 14
+                    self.ypos = playery - 16
             
             
         
         if self.enemy:#The script that tells who to murder
             if playery < self.ypos + 32 and playery > self.ypos and self.xpos + 8 > playerx and self.xpos < playerx + 32:
-                doExit = True
+                #spacespiders = restart(spacespiders)
+                playerx = 512
+                lives -= 1
+                self.power = 0
+                if lives == 0:
+                    doExit = True
+                return True
             if (self.xpos >= playerx and self.xpos <= playerx + 32) and self.ypos >= playery:
                 self.ypos = 1000
             if self.ypos > 768:
@@ -145,9 +159,13 @@ class shoot:
                 if spacespiders[i].ypos < self.ypos + 32 and spacespiders[i].ypos > self.ypos and self.xpos + 4 > spacespiders[i].xpos and self.xpos < spacespiders[i].xpos + 32 and self.ypos < playery and spacespiders[i].live == True:
                     spacespiders[i].live = False
                     self.power = 0
+                    score += 10
+                    self.xpos = playerx + 14
+                    self.ypos = playery - 16
                     
             if self.ypos < 0:
                 self.power = 0
+        return False
     def rendong(self):
         if self.power > 0:
             if self.enemy:
@@ -159,7 +177,6 @@ class shoot:
 fire = [shoot()]
 for g in range(len(spacespiders)):
     fire.append(shoot(True,0,0,g))
-    print(g)
     
     
 class barrier:
@@ -177,10 +194,35 @@ def blocker(x,y):
     for k in range(2):
         for l in range(4):
             shield.append(barrier((l*32)+x,(k*32)+y))
+
+def restart(spiders):#Completely useless function as of now as I've learned that the aliens don't even reset their positions when you die
+    global playerx
+    global fire
+    space = []
+    playerx = 512
+    for f in range(12):
+        if spiders[f].live:
+            space.append(alien("back", (f*64)+64, 64, f*64))
+    for p in range(2):
+        for f in range(12):
+            if spiders[f+12+(p*12)].live:
+                spacespiders.append(alien("middle", (f*64)+64, 192-(64*p), f*64))
+    for p in range(2):
+        for f in range(12):
+            if spiders[f+36+(p*12)].live:
+                spacespiders.append(alien("front", (f*64)+64, 320-(64*p), f*64))
+    fire = [shoot()]
+    for g in range(len(space)):
+        fire.append(shoot(True,0,0,g))
+    return space
+
+
 blocker(64,576)
 blocker(320,576)
 blocker(576,576)
 blocker(832,576)
+
+
 #gaem loop
 while not doExit:
     
@@ -221,7 +263,7 @@ while not doExit:
     wedone = True
     for d in range(len(spacespiders)):
         if spacespiders[d].live:
-            if random.randrange(1000 ) == 0:
+            if random.randrange((1000 + len(spacespiders)) ) == 0:
                 fire[d+1 ].pew(12)
         wedone = False
             
@@ -237,7 +279,8 @@ while not doExit:
     for j in range(len(spacespiders)):
         spacespiders[j].moove()
     for i in range(len(fire)):
-        fire[i].moving()
+        if fire[i].moving():
+            break
     
     #speed up every down the go
     if corycooldown < 0:
@@ -260,7 +303,7 @@ while not doExit:
             spacespiders[i].rendish()
     for i in range(len(fire)):
         fire[i].rendong()
-            
+    print(score)
     pygame.display.flip()#this actually puts the pixel on the screen
 #end
 pygame.quit()
