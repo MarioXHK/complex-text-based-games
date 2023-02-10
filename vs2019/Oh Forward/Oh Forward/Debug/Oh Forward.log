@@ -1,0 +1,3 @@
+﻿  Oh Forward.cpp
+C:\Users\671766\source\repos\Oh Forward\Oh Forward\Oh Forward.cpp(29,18): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  Oh Forward.vcxproj -> C:\Users\671766\source\repos\Oh Forward\Debug\Oh Forward.exe
