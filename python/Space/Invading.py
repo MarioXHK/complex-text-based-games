@@ -15,13 +15,14 @@ playery = 720
 pewx = playerx
 pewy = playery
 vx = 0
-speedto = 30
+speedto = 40
 cory = False
 corycooldown = 0
 score = 0
-lives = 0
+lives = 2
 #pngs?
 defender = pygame.image.load("defender.png")
+heart = pygame.image.load("heart.png")
 alienback = pygame.image.load("back.png")
 alienback2 = pygame.image.load("backagain.png")
 alienmid = pygame.image.load("mid.png")
@@ -32,8 +33,9 @@ keys = [False,False,False]
 stuckin = True
 #emlny
 class alien:
-    def __init__(self,type = "normal",xpos = 0,ypos = 0, xoffset = 0,):
+    def __init__(self,type = "normal",xpos = 0,ypos = 0, xoffset = 0,speed = 8):
         self.type = type
+        self.speed = speed
         self.live = True
         self.xpos = xpos
         self.ypos = ypos
@@ -45,8 +47,11 @@ class alien:
         self.frame = True
     def moove(self):
         global speedto
+        global doexit
         if not self.live:
             return
+        if self.ypos > 700:
+            doExit = True
         self.vxtimer += 1
         if self.vxtimer >= speedto:
             self.vxtimer = 0
@@ -54,7 +59,7 @@ class alien:
                 self.alldone = True
                 if self.alldone:
                     if self.oldypos == self.ypos:
-                        self.ypos += 16
+                        self.ypos += self.speed
                     else:
                         self.alldone = False
                         self.oldypos = self.ypos
@@ -65,9 +70,9 @@ class alien:
                         self.left = True
             if not self.alldone:
                 if not self.left:
-                    self.xpos += 12
+                    self.xpos += self.speed
                 else:
-                    self.xpos -= 12
+                    self.xpos -= self.speed
             if self.frame:
                 self.frame = False
             else:
@@ -107,10 +112,12 @@ class shoot:
         self.ypos = ypos
         self.atchto = atchto
         self.power = 0
+        self.cooldownyouidot = 0
     def pew(self,power):
         if self.power >= 0:
             self.power = power
     def moving(self):
+        self.cooldownyouidot -= 1
         global spacespiders
         global playerx
         global playery
@@ -142,12 +149,13 @@ class shoot:
             
         
         if self.enemy:#The script that tells who to murder
-            if playery < self.ypos + 32 and playery > self.ypos and self.xpos + 8 > playerx and self.xpos < playerx + 32:
+            if playery < self.ypos + 32 and playery > self.ypos and self.xpos + 8 > playerx and self.xpos < playerx + 32 and self.cooldownyouidot <= 0:
                 #spacespiders = restart(spacespiders)
                 playerx = 512
                 lives -= 1
+                self.cooldownyouidot = 100
                 self.power = 0
-                if lives == 0:
+                if lives == -1:
                     doExit = True
                 return True
             if (self.xpos >= playerx and self.xpos <= playerx + 32) and self.ypos >= playery:
@@ -296,6 +304,8 @@ while not doExit:
     #rendererrererer=========================================================================0
     screen.fill((0,0,0)) #wipe screen so it doesn't smear
     screen.blit(defender, (playerx,playery))
+    for i in range(lives):
+        screen.blit(heart, (32+(i*48),700))
     for i in range(len(shield)):
         shield[i].rendie()
     for i in range(len(spacespiders)):
@@ -303,6 +313,7 @@ while not doExit:
             spacespiders[i].rendish()
     for i in range(len(fire)):
         fire[i].rendong()
+    
     print(score)
     pygame.display.flip()#this actually puts the pixel on the screen
 #end
