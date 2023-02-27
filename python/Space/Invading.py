@@ -116,6 +116,8 @@ class shoot:
     def pew(self,power):
         if self.power >= 0:
             self.power = power
+            if self.enemy:
+                pygame.mixer.Sound.play(pewpew)
     def moving(self):
         self.cooldownyouidot -= 1
         global spacespiders
@@ -141,6 +143,10 @@ class shoot:
         for i in range(len(shield)):#All shots can destroy shields, and they prioritize shields over other stuffs
             if shield[i].ypos < self.ypos + 32 and shield[i].ypos > self.ypos and self.xpos + 4 > shield[i].xpos and self.xpos < shield[i].xpos + 32 and self.ypos < playery and shield[i].health > 0:
                 shield[i].health -= 1
+                if shield[i].health <= 0:
+                    pygame.mixer.Sound.play(bwab)
+                else:
+                    pygame.mixer.Sound.play(brbr)
                 self.power = 0
                 if not self.enemy:
                     self.xpos = playerx + 14
@@ -155,6 +161,7 @@ class shoot:
                 lives -= 1
                 self.cooldownyouidot = 100
                 self.power = 0
+                pygame.mixer.Sound.play(blug)
                 if lives == -1:
                     doExit = True
                 return True
@@ -166,6 +173,10 @@ class shoot:
             for i in range(len(spacespiders)):
                 if spacespiders[i].ypos < self.ypos + 32 and spacespiders[i].ypos > self.ypos and self.xpos + 4 > spacespiders[i].xpos and self.xpos < spacespiders[i].xpos + 32 and self.ypos < playery and spacespiders[i].live == True:
                     spacespiders[i].live = False
+                    if random.randrange(0,2) == 1:
+                        pygame.mixer.Sound.play(boom1)
+                    else:
+                        pygame.mixer.Sound.play(boom2)
                     self.power = 0
                     score += 10
                     self.xpos = playerx + 14
@@ -224,13 +235,24 @@ def restart(spiders):#Completely useless function as of now as I've learned that
         fire.append(shoot(True,0,0,g))
     return space
 
+dothe = False
+howdy = 0
 
 blocker(64,576)
 blocker(320,576)
 blocker(576,576)
 blocker(832,576)
-
-
+#Sounds
+pewpew = pygame.mixer.Sound('pew.mp3')#load in sound effect
+boop1 = pygame.mixer.Sound('boop1.mp3')
+boop2 = pygame.mixer.Sound('boop2.mp3')
+boop3 = pygame.mixer.Sound('boop3.mp3')
+boop4 = pygame.mixer.Sound('boop4.mp3')
+boom1 = pygame.mixer.Sound('boom0.mp3')
+boom2 = pygame.mixer.Sound('boom1.mp3')
+bwab = pygame.mixer.Sound('bwab.mp3')
+blug = pygame.mixer.Sound('blug.mp3')
+brbr = pygame.mixer.Sound('brbrbrbrb.mp3')
 #gaem loop
 while not doExit:
     
@@ -265,6 +287,8 @@ while not doExit:
     else:
         vx = 0
     if keys[2]:
+        if fire[0].power == 0 and fire[0].ypos > 0:
+            pygame.mixer.Sound.play(pewpew)
         fire[0].pew(20)
     #moving stuffff-==-=--==-=-=-= ???????????????!!!!!!!!!!!!!!!!!!!!!!!!!!
     
@@ -289,7 +313,24 @@ while not doExit:
     for i in range(len(fire)):
         if fire[i].moving():
             break
-    
+    hi = 0
+    for i in range(len(spacespiders)):#I'm not orginized in code at all
+        if spacespiders[i].live:
+            hi = i
+            if dothe != spacespiders[i].frame:
+                dothe = spacespiders[hi].frame
+                howdy += 1
+                if howdy > 3:
+                    howdy = 0
+                if howdy == 0:
+                    pygame.mixer.Sound.play(boop1)
+                elif howdy == 1:
+                    pygame.mixer.Sound.play(boop2)
+                elif howdy == 2:
+                    pygame.mixer.Sound.play(boop3)
+                else:
+                    pygame.mixer.Sound.play(boop4)
+                break
     #speed up every down the go
     if corycooldown < 0:
         corycooldown = -10
