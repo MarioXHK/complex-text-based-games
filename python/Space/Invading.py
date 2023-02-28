@@ -1,5 +1,6 @@
 import pygame
 import random
+import time
 print("Defend, Moon!")
 print("I really mean it, you're defending the moon!")
 amongst = (0, 0, 0)
@@ -16,6 +17,7 @@ pewx = playerx
 pewy = playery
 vx = 0
 speedto = 40
+speedog = speedto
 cory = False
 corycooldown = 0
 score = 0
@@ -29,6 +31,8 @@ alienmid = pygame.image.load("mid.png")
 alienmid2 = pygame.image.load("midagain.png")
 alienfront = pygame.image.load("front.png")
 alienfront2 = pygame.image.load("frontagain.png")
+alienbonus = [pygame.image.load("bonus0.png"),pygame.image.load("bonus1.png"),pygame.image.load("bonus2.png")]
+instructions = pygame.image.load("instructions.png")
 keys = [False,False,False]
 stuckin = True
 #emlny
@@ -53,36 +57,52 @@ class alien:
         if self.ypos > 700:
             doExit = True
         self.vxtimer += 1
-        if self.vxtimer >= speedto:
-            self.vxtimer = 0
-            if (self.xpos <= 32 + self.xoffset or self.xpos >= 160 + self.xoffset):
-                self.alldone = True
-                if self.alldone:
-                    if self.oldypos == self.ypos:
-                        self.ypos += self.speed
-                    else:
-                        self.alldone = False
-                        self.oldypos = self.ypos
-                    
-                    if self.xpos <= 64 + self.xoffset:
-                        self.left = False
-                    else:
-                        self.left = True
-            if not self.alldone:
-                if not self.left:
-                    self.xpos += self.speed
+        if self.type == "bonus":
+            if self.left:
+                self.xpos -= self.speed
+                if self.xpos < -32:
+                    return True
                 else:
-                    self.xpos -= self.speed
-            if self.frame:
-                self.frame = False
+                    return False
             else:
-                self.frame = True
+                self.xpos += self.speed
+                if self.xpos > 1060:
+                    return True
+                else:
+                    return False
+        else:
+            if self.vxtimer >= speedto:
+                self.vxtimer = 0
+                if (self.xpos <= 32 + self.xoffset or self.xpos >= 160 + self.xoffset):
+                    self.alldone = True
+                    if self.alldone:
+                        if self.oldypos == self.ypos:
+                            self.ypos += self.speed
+                        else:
+                            self.alldone = False
+                            self.oldypos = self.ypos
+                        
+                        if self.xpos <= 64 + self.xoffset:
+                            self.left = False
+                        else:
+                            self.left = True
+                if not self.alldone:
+                    if not self.left:
+                        self.xpos += self.speed
+                    else:
+                        self.xpos -= self.speed
+                if self.frame:
+                    self.frame = False
+                else:
+                    self.frame = True
     def rendish(self):
         if self.frame:
             if self.type == "back":
                 screen.blit(alienback, (self.xpos,self.ypos))
             elif self.type == "front":
                 screen.blit(alienfront, (self.xpos-8,self.ypos))
+            elif self.type == "bonus":
+                screen.blit(alienbonus[0], (self.xpos-32,self.ypos))
             else:
                 screen.blit(alienmid, (self.xpos-6,self.ypos))
         else:
@@ -103,7 +123,8 @@ for p in range(2):
 for p in range(2):
     for f in range(12):
         spacespiders.append(alien("front", (f*64)+64, 320-(64*p), f*64))
-
+extra = alien("bonus", -64, 32, 0, 4)
+extraonscreen = False
 
 class shoot:
     def __init__(self,enemy = False,xpos = 0,ypos = 0, atchto = 0,):
@@ -123,10 +144,11 @@ class shoot:
         global spacespiders
         global playerx
         global playery
-        global doExit
+        global speedto
         global shield
         global lives
         global score
+        global extra
         if not self.power > 0:
             if self.enemy:
                 self.xpos = spacespiders[self.atchto].xpos + 12
@@ -163,7 +185,10 @@ class shoot:
                 self.power = 0
                 pygame.mixer.Sound.play(blug)
                 if lives == -1:
-                    doExit = True
+                    pygame.mixer.Sound.play(voice[2])
+                    time.sleep(3)
+                    speedto = 2
+                    
                 return True
             if (self.xpos >= playerx and self.xpos <= playerx + 32) and self.ypos >= playery:
                 self.ypos = 1000
@@ -173,15 +198,24 @@ class shoot:
             for i in range(len(spacespiders)):
                 if spacespiders[i].ypos < self.ypos + 32 and spacespiders[i].ypos > self.ypos and self.xpos + 4 > spacespiders[i].xpos and self.xpos < spacespiders[i].xpos + 32 and self.ypos < playery and spacespiders[i].live == True:
                     spacespiders[i].live = False
-                    if random.randrange(0,2) == 1:
-                        pygame.mixer.Sound.play(boom1)
-                    else:
-                        pygame.mixer.Sound.play(boom2)
+                    pygame.mixer.Sound.play(boom[random.randrange(0,2)])
                     self.power = 0
-                    score += 10
+                    if spacespiders[i].type == "front":
+                        score += 10
+                    elif spacespiders[i].type == "middle":
+                        score += 20
+                    elif spacespiders[i].type == "back":
+                        score += 40
                     self.xpos = playerx + 14
                     self.ypos = playery - 16
-                    
+                elif extra.ypos < self.ypos + 32 and extra.ypos > self.ypos and self.xpos + 4 > extra.xpos-32 and self.xpos < extra.xpos + 32 and self.ypos < playery and extra.live == True:
+                    extra.live = False
+                    pygame.mixer.Sound.play(boom[random.randrange(0,2)])
+                    pygame.mixer.Sound.play(cough)
+                    self.power = 0
+                    score += random.randrange(1,11)*100
+                    self.xpos = playerx + 14
+                    self.ypos = playery - 16
             if self.ypos < 0:
                 self.power = 0
         return False
@@ -214,11 +248,8 @@ def blocker(x,y):
         for l in range(4):
             shield.append(barrier((l*32)+x,(k*32)+y))
 
-def restart(spiders):#Completely useless function as of now as I've learned that the aliens don't even reset their positions when you die
-    global playerx
-    global fire
+def respawn(spiders):#Completely useless function as of now as I've learned that the aliens don't even reset their positions when you die
     space = []
-    playerx = 512
     for f in range(12):
         if spiders[f].live:
             space.append(alien("back", (f*64)+64, 64, f*64))
@@ -230,14 +261,28 @@ def restart(spiders):#Completely useless function as of now as I've learned that
         for f in range(12):
             if spiders[f+36+(p*12)].live:
                 spacespiders.append(alien("front", (f*64)+64, 320-(64*p), f*64))
-    fire = [shoot()]
+    lava = [shoot()]
     for g in range(len(space)):
-        fire.append(shoot(True,0,0,g))
-    return space
+        lava.append(shoot(True,0,0,g))
+    return [space,lava]
+def restart():
+    invaders = []
+    for f in range(12):
+        invaders.append(alien("back", (f*64)+64, 64, f*64))
+    for p in range(2):
+        for f in range(12):
+            invaders.append(alien("middle", (f*64)+64, 192-(64*p), f*64))
+    for p in range(2):
+        for f in range(12):
+            invaders.append(alien("front", (f*64)+64, 320-(64*p), f*64))
+    return invaders
+
 
 dothe = False
 howdy = 0
-
+def debugprint(thing):
+    print(thing)
+    return thing
 blocker(64,576)
 blocker(320,576)
 blocker(576,576)
@@ -248,12 +293,33 @@ boop1 = pygame.mixer.Sound('boop1.mp3')
 boop2 = pygame.mixer.Sound('boop2.mp3')
 boop3 = pygame.mixer.Sound('boop3.mp3')
 boop4 = pygame.mixer.Sound('boop4.mp3')
-boom1 = pygame.mixer.Sound('boom0.mp3')
-boom2 = pygame.mixer.Sound('boom1.mp3')
+boom = [pygame.mixer.Sound('boom0.mp3'),pygame.mixer.Sound('boom1.mp3')]
 bwab = pygame.mixer.Sound('bwab.mp3')
 blug = pygame.mixer.Sound('blug.mp3')
 brbr = pygame.mixer.Sound('brbrbrbrb.mp3')
+cough = pygame.mixer.Sound('cough.mp3')
+oooo = [pygame.mixer.Sound('oooo0.mp3'),pygame.mixer.Sound('oooo1.mp3'),pygame.mixer.Sound('oooo2.mp3'),pygame.mixer.Sound('oooo3.mp3'),pygame.mixer.Sound('oooo4.mp3'),pygame.mixer.Sound('oooo5.mp3'),pygame.mixer.Sound('oooo6.mp3'),pygame.mixer.Sound('oooo7.mp3')]
+voice = [pygame.mixer.Sound('killu.mp3'),pygame.mixer.Sound('rekill.mp3'),pygame.mixer.Sound('uded.mp3')]
 #gaem loop
+didyougetit = False
+print("Press any button to continue")
+while not didyougetit:
+    for event in pygame.event.get(): #2b- i mean event queue
+        if event.type == pygame.QUIT:
+            doExit = True
+            didyougetit = doExit
+        #inpoot
+        
+        if event.type == pygame.KEYDOWN: #keyboard input
+            didyougetit = True
+    clock.tick(10)
+    
+    
+    screen.fill((0,0,0)) #wipe screen so it doesn't smear
+    screen.blit(instructions, (0,0))
+    pygame.display.flip()
+gamestart = True
+gamerest = False
 while not doExit:
     
     for event in pygame.event.get(): #2b- i mean event queue
@@ -290,17 +356,44 @@ while not doExit:
         if fire[0].power == 0 and fire[0].ypos > 0:
             pygame.mixer.Sound.play(pewpew)
         fire[0].pew(20)
-    #moving stuffff-==-=--==-=-=-= ???????????????!!!!!!!!!!!!!!!!!!!!!!!!!!
-    
+    #functional stufff???????????????????????????????????????STUFF I DON'T KNOW THE NAME OF!
     wedone = True
     for d in range(len(spacespiders)):
         if spacespiders[d].live:
             if random.randrange((1000 + len(spacespiders)) ) == 0:
                 fire[d+1 ].pew(12)
-        wedone = False
+            wedone = False
             
     if wedone:
-        doexit = True
+        gamerest = True
+        time.sleep(2)
+        if speedog > 10:
+            speedog -= 2
+        speedto = speedog
+        playerx = 512
+        spacespiders = restart()
+        fire = [shoot()]
+        for g in range(len(spacespiders)):
+            fire.append(shoot(True,0,0,g))
+    
+    
+    if not extraonscreen:
+        if random.randrange(0,1000) == 0:
+            extraonscreen = True
+            pygame.mixer.Sound.play(oooo[random.randrange(0,8)])
+            extra.live = True
+            if random.randrange(0,2) == 0:
+                extra.left = True
+                extra.xpos = 1060
+            else:
+                extra.left = False
+                extra.xpos = -32
+    if not extra.live:
+        extraonscreen = False
+    #moving stuffff-==-=--==-=-=-= ???????????????!!!!!!!!!!!!!!!!!!!!!!!!!!
+    if extraonscreen:
+        if extra.moove():
+            extraonscreen = False
     
     playerx += vx
     
@@ -344,18 +437,36 @@ while not doExit:
         corycooldown = 120
     #rendererrererer=========================================================================0
     screen.fill((0,0,0)) #wipe screen so it doesn't smear
-    screen.blit(defender, (playerx,playery))
+    if not gamestart:
+        screen.blit(defender, (playerx,playery))
     for i in range(lives):
         screen.blit(heart, (32+(i*48),700))
+    
+    
     for i in range(len(shield)):
         shield[i].rendie()
+    
+    
     for i in range(len(spacespiders)):
         if spacespiders[i].live:
             spacespiders[i].rendish()
+    
+    if extraonscreen:
+        extra.rendish()
+    
     for i in range(len(fire)):
         fire[i].rendong()
     
     print(score)
     pygame.display.flip()#this actually puts the pixel on the screen
+    if gamestart:
+        pygame.mixer.Sound.play(voice[0])
+        time.sleep(2)
+        gamestart = False
+    if gamerest:
+        pygame.mixer.Sound.play(voice[1])
+        time.sleep(2)
+        gamerest = False
+        
 #end
 pygame.quit()
