@@ -51,11 +51,9 @@ class alien:
         self.frame = True
     def moove(self):
         global speedto
-        global doexit
+        global doExit
         if not self.live:
             return
-        if self.ypos > 700:
-            doExit = True
         self.vxtimer += 1
         if self.type == "bonus":
             if self.left:
@@ -95,6 +93,8 @@ class alien:
                     self.frame = False
                 else:
                     self.frame = True
+        if self.ypos > 700:
+            doExit = True
     def rendish(self):
         if self.frame:
             if self.type == "back":
@@ -177,7 +177,7 @@ class shoot:
             
         
         if self.enemy:#The script that tells who to murder
-            if playery < self.ypos + 32 and playery > self.ypos and self.xpos + 8 > playerx and self.xpos < playerx + 32 and self.cooldownyouidot <= 0:
+            if playery < self.ypos + 32 and playery > self.ypos and self.xpos + 8 > playerx and self.xpos < playerx + 32 and self.cooldownyouidot <= 0 and lives > -1:
                 #spacespiders = restart(spacespiders)
                 playerx = 512
                 lives -= 1
@@ -321,7 +321,6 @@ while not didyougetit:
 gamestart = True
 gamerest = False
 while not doExit:
-    
     for event in pygame.event.get(): #2b- i mean event queue
         if event.type == pygame.QUIT:
             doExit = True;
@@ -344,7 +343,8 @@ while not doExit:
                 keys[2]=False
     clock.tick(30)
     
-    
+    if lives <= -1:
+        keys = [False, False, False]
     
     if keys[0]:
         vx = -6
@@ -437,7 +437,7 @@ while not doExit:
         corycooldown = 120
     #rendererrererer=========================================================================0
     screen.fill((0,0,0)) #wipe screen so it doesn't smear
-    if not gamestart:
+    if not gamestart and lives > -1:
         screen.blit(defender, (playerx,playery))
     for i in range(lives):
         screen.blit(heart, (32+(i*48),700))
