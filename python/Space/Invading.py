@@ -39,6 +39,7 @@ stuckin = True
 #emlny
 class alien:
     def __init__(self,type = "normal",xpos = 0,ypos = 0, xoffset = 0,speed = 8):
+        global speedto
         self.type = type
         self.speed = speed
         self.live = True
@@ -51,13 +52,20 @@ class alien:
         self.oldypos = ypos
         self.frame = True
         if self.type == "boss":
-            self.health = 30
+            self.health = 100-(speedto*2)
+            self.vy = -50
         else:
             self.health = 1
-    def moove(self):
-        global speedto
+            self.vy = -10
+    def moove(self,speeding,healthy):
         global doExit
         if not self.live:
+            return
+        if healthy <= -1 and self.type != "bonus":
+            self.vy += 1
+            self.ypos += self.vy
+            if self.ypos > 700:
+                doExit = True
             return
         self.vxtimer += 1
         if self.type == "bonus":
@@ -74,11 +82,12 @@ class alien:
                 else:
                     return False
         else:
-            if self.vxtimer >= speedto:
+            if self.vxtimer >= speeding:
                 self.vxtimer = 0
                 minx = 32
                 maxx = 160
                 if self.type == "boss":
+                    self.vxtimer = speeding//4
                     minx = 0
                     maxx = 512
                 if (self.xpos <= minx + self.xoffset or self.xpos >= maxx + self.xoffset):
@@ -214,7 +223,8 @@ class shoot:
                         spacespiders[i].health -= 1
                         if spacespiders[i].health <= 0:
                             spacespiders[i].live = False
-                            score += 1000
+                            score += 2000
+                            lives += 1
                         pygame.mixer.Sound.play(boom[random.randrange(0,2)])
                         self.power = 0
                         self.xpos = playerx + 14
@@ -336,6 +346,7 @@ cough = pygame.mixer.Sound('cough.mp3')
 oooo = [pygame.mixer.Sound('oooo0.mp3'),pygame.mixer.Sound('oooo1.mp3'),pygame.mixer.Sound('oooo2.mp3'),pygame.mixer.Sound('oooo3.mp3'),pygame.mixer.Sound('oooo4.mp3'),pygame.mixer.Sound('oooo5.mp3'),pygame.mixer.Sound('oooo6.mp3'),pygame.mixer.Sound('oooo7.mp3')]
 voice = [pygame.mixer.Sound('killu.mp3'),pygame.mixer.Sound('rekill.mp3'),pygame.mixer.Sound('uded.mp3')]
 warning = pygame.mixer.Sound('warning.mp3')
+unlock = pygame.mixer.Sound('endlessunlock.mp3')
 bossmusic = pygame.mixer.music.load('hosthoedown.mp3')
 
 debug = True
@@ -362,6 +373,7 @@ gamestart = True
 gamerest = False
 pygame.mixer.music.play(-1)
 #GAME loop (for realzies)
+endless = False
 while not doExit:
     for event in pygame.event.get(): #2b- i mean event queue
         if event.type == pygame.QUIT:
@@ -410,9 +422,11 @@ while not doExit:
     for d in range(len(spacespiders)):
         if spacespiders[d].live:
             if spacespiders[d].type == "boss":
-                if random.randrange(100) == 0:
-                    fire[d+1].xpos = spacespiders[d].xpos + random.randrange(256)
-                    fire[d+1 ].pew(12)
+                if random.randrange(speedto) == 0:
+                    thing = random.randrange(1,len(fire))
+                    fire[thing].pew(50-speedto)
+                    fire[thing].xpos = spacespiders[d].xpos + random.randrange(256)
+                    fire[thing].ypos = spacespiders[d].ypos + 192
             else:
                 if random.randrange((1000 + len(spacespiders)) ) == 0:
                     fire[d+1 ].pew(12)
@@ -421,16 +435,26 @@ while not doExit:
             
     if wedone:
         gamerest = True
+        if speedog % 10 != 0 or speedog == 40:
+            pygame.mixer.music.pause()
+        else:
+            pygame.mixer.music.unpause()
         if not debug:
             time.sleep(2)
-        if speedog > 10:
+        if speedog >= 10:
             speedog -= 2
+        else:
+            if not endless:
+                pygame.mixer.Sound.play(unlock)
+                time.sleep(8)
+                endless = True
+            speedog = 19
         speedto = speedog
         playerx = 512
         spacespiders = restart(speedog)
         fire = [shoot()]
         if spacespiders[0].type == "boss":
-            for g in range(len(spacespiders)):
+            for g in range(50):
                 fire.append(shoot(True,0,0,0))
         else:
             for g in range(len(spacespiders)):
@@ -457,7 +481,7 @@ while not doExit:
         pygame.mixer.music.unpause()
     #moving stuffff-==-=--==-=-=-= ???????????????!!!!!!!!!!!!!!!!!!!!!!!!!!
     if extraonscreen:
-        if extra.moove():
+        if extra.moove(speedto, lives):
             extraonscreen = False
     
     playerx += vx
@@ -467,7 +491,7 @@ while not doExit:
     elif playerx > 1024:
         playerx = 1024-32
     for j in range(len(spacespiders)):
-        spacespiders[j].moove()
+        spacespiders[j].moove(speedto, lives)
     for i in range(len(fire)):
         if fire[i].moving():
             break
