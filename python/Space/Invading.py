@@ -225,6 +225,7 @@ class shoot:
                             spacespiders[i].live = False
                             score += 2000
                             lives += 1
+                            pygame.mixer.Sound.play(boom[2])
                         pygame.mixer.Sound.play(boom[random.randrange(0,2)])
                         self.power = 0
                         self.xpos = playerx + 14
@@ -338,7 +339,7 @@ boop1 = pygame.mixer.Sound('boop1.mp3')
 boop2 = pygame.mixer.Sound('boop2.mp3')
 boop3 = pygame.mixer.Sound('boop3.mp3')
 boop4 = pygame.mixer.Sound('boop4.mp3')
-boom = [pygame.mixer.Sound('boom0.mp3'),pygame.mixer.Sound('boom1.mp3')]
+boom = [pygame.mixer.Sound('boom0.mp3'),pygame.mixer.Sound('boom1.mp3'),pygame.mixer.Sound('bigboom.mp3')]
 bwab = pygame.mixer.Sound('bwab.mp3')
 blug = pygame.mixer.Sound('blug.mp3')
 brbr = pygame.mixer.Sound('brbrbrbrb.mp3')
@@ -349,7 +350,7 @@ warning = pygame.mixer.Sound('warning.mp3')
 unlock = pygame.mixer.Sound('endlessunlock.mp3')
 bossmusic = pygame.mixer.music.load('hosthoedown.mp3')
 
-debug = True
+debug = False
 dekey = [False]
 #gaem loop
 didyougetit = False
