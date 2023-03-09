@@ -1,0 +1,7 @@
+﻿  Source.cpp
+  ball.cpp
+C:\Users\671766\Documents\code\vs2019\Breakin\Breakin\ball.cpp(18,2): error C2065: 'bvx': undeclared identifier
+C:\Users\671766\Documents\code\vs2019\Breakin\Breakin\ball.cpp(20,6): error C2084: function 'void flipx(bool)' already has a body
+C:\Users\671766\Documents\code\vs2019\Breakin\Breakin\ball.cpp(17): message : see previous definition of 'flipx'
+C:\Users\671766\Documents\code\vs2019\Breakin\Breakin\ball.cpp(21,2): error C2065: 'bvy': undeclared identifier
+  Generating Code...
