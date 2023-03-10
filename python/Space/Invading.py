@@ -34,6 +34,7 @@ alienfront2 = pygame.image.load("frontagain.png")
 alienbonus = [pygame.image.load("bonus0.png"),pygame.image.load("bonus1.png"),pygame.image.load("bonus2.png")]
 instructions = pygame.image.load("instructions.png")
 boss = pygame.image.load("boss.png")
+boxb = [pygame.image.load("shield1.png"),pygame.image.load("shield1.png"),pygame.image.load("shield2.png"),pygame.image.load("shield3.png"),pygame.image.load("shield4.png"),pygame.image.load("shield5.png")]
 keys = [False,False,False]
 stuckin = True
 #emlny
@@ -50,6 +51,7 @@ class alien:
         self.vxtimer = 0
         self.alldone = False
         self.oldypos = ypos
+        self.bonustype = random.randrange(0,3)
         self.frame = True
         if self.type == "boss":
             self.health = 100-(speedto*2)
@@ -116,7 +118,7 @@ class alien:
             doExit = True
     def rendish(self):
         if self.type == "bonus":
-            screen.blit(alienbonus[0], (self.xpos-32,self.ypos))
+            screen.blit(alienbonus[self.bonustype], (self.xpos-32,self.ypos))
             return
         elif self.type == "boss":
             screen.blit(boss, (self.xpos,self.ypos))
@@ -277,7 +279,7 @@ class barrier:
     def rendie(self):
         color = self.health*50
         if self.health > 0:
-            pygame.draw.rect(screen, (0, color, 0), (self.xpos, self.ypos, 32, 32))
+            screen.blit(boxb[self.health], (self.xpos,self.ypos))
 shield = []
 def blocker(x,y):
     global shield
