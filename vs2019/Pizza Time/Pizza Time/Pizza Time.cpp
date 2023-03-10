@@ -46,9 +46,9 @@ int main()
     yours.info();
     cout << "\nAh yes, this is indeed pizza time.\n";
     int totalprice = (cheese.price() + law.price() + pineapple.price() + popeyes.price() + pop_pies.price() + yours.price());
-    cout << "Your total price for all these pizzas will be " << totalprice << " dollars.\n";
+    cout << "Your total price for all these pizzas will be " << totalprice << " dollars.\nBone App";
     if (totalprice > 0)
-        cout << "Have a good day!\n";
+        cout << "etit, and have a good day!\n";
     else
-        cout << "Wait, how did you... do that?\n";
+        cout << "le tea, and...\nWait, how did you... do that?\n";
 }
