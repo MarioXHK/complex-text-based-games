@@ -17,7 +17,7 @@ playerTurn = True
 pi = 3.1415926535897932384626433832795
 ded = False
 
-def collision(xpos, ypos):
+def collision(xpos, ypos,sped):
     if math.sqrt((xpos - 400)**2 + (ypos - 400)**2)>200 or math.sqrt((xpos - 400)**2 + (ypos - 400)**2)<100:
         print("outside the ring")
         return -1
@@ -25,27 +25,27 @@ def collision(xpos, ypos):
         print("over red button")
         pygame.draw.arc(screen, (255,0,0),(200,200,400,400),pi/2,pi,100)
         pygame.display.flip()
-        winsound.Beep(440,400)
+        winsound.Beep(440,sped)
         return 0
     elif xpos < 400 and ypos > 400:
         print("over green button")
         pygame.draw.arc(screen, (0,255,0),(200,200,400,400),pi,3*pi/2,100)
         pygame.display.flip()
-        winsound.Beep(640,400)
+        winsound.Beep(640,sped)
         return 1
     elif xpos > 400 and ypos < 400:
         print("over yellow button")
         pygame.draw.arc(screen, (255,255,0),(200,200,400,400),pi*2,pi/2,100)
         pygame.display.flip()
-        winsound.Beep(240,400)
+        winsound.Beep(240,sped)
         return 3
     else:
         print("over blue button")
         pygame.draw.arc(screen, (0,0,255),(200,200,400,400),3*pi/2,pi*2,100)
         pygame.display.flip()
-        winsound.Beep(840,400)
+        winsound.Beep(840,sped)
         return 2
-
+gamespeed = 300
 pygame.draw.arc(screen, (155,0,0),(200,200,400,400),pi/2,pi,100)
 pygame.draw.arc(screen, (0,155,0),(200,200,400,400),pi,3*pi/2,100)
 pygame.draw.arc(screen, (0,0,155),(200,200,400,400),3*pi/2,pi*2,100)
@@ -70,7 +70,7 @@ while True:
     if playerTurn:
         if len(playerPattern) < len(pattern):
             if hasClicked:
-                playerPattern.append(collision(mousePos[0], mousePos[1]))
+                playerPattern.append(collision(mousePos[0], mousePos[1],100+gamespeed))
                 hasClicked=False
             for i in range(len(playerPattern)):
                 if playerPattern[i] != pattern[i]:
@@ -91,27 +91,31 @@ while True:
         print("AAAAAAAAAAA")
         winsound.Beep(1500,1000)
         screen.fill((0,0,0))
+        gamespeed = 300
         ded = False
     elif not playerTurn:
+        gamespeed-=20
+        if gamespeed < 0:
+            gamespeed = 0
         print("Starting machine turn")
         pattern.append(random.randrange(0,4))
         for i in range(len(pattern)):
             if pattern[i] == 0:
                 pygame.draw.arc(screen, (255,0,0),(200,200,400,400),pi/2,pi,100)
                 pygame.display.flip()
-                winsound.Beep(440,500)
+                winsound.Beep(440,200+gamespeed)
             elif pattern[i] == 1:
                 pygame.draw.arc(screen, (0,255,0),(200,200,400,400),pi,3*pi/2,100)
                 pygame.display.flip()
-                winsound.Beep(640,500)
+                winsound.Beep(640,200+gamespeed)
             elif pattern[i] == 2:
                 pygame.draw.arc(screen, (0,0,255),(200,200,400,400),3*pi/2,pi*2,100)
                 pygame.display.flip()
-                winsound.Beep(840,500)
+                winsound.Beep(840,200+gamespeed)
             elif pattern[i] == 3:
                 pygame.draw.arc(screen, (255,255,0),(200,200,400,400),pi*2,pi/2,100)
                 pygame.display.flip()
-                winsound.Beep(240,500)
+                winsound.Beep(240,200+gamespeed)
             pygame.draw.arc(screen, (155,0,0),(200,200,400,400),pi/2,pi,100)
             pygame.draw.arc(screen, (0,155,0),(200,200,400,400),pi,3*pi/2,100)
             pygame.draw.arc(screen, (0,0,155),(200,200,400,400),3*pi/2,pi*2,100)
