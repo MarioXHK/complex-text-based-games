@@ -1,0 +1,11 @@
+C:\Users\671766\Documents\code\vs2019\sfml birbs\Debug\spring cards.vcxproj.CopyComplete
+C:\Users\671766\Documents\code\vs2019\sfml birbs\Debug\spring cards.exe
+C:\Users\671766\Documents\code\vs2019\sfml birbs\Debug\sfml-graphics-d-2.dll
+C:\Users\671766\Documents\code\vs2019\sfml birbs\Debug\sfml-window-d-2.dll
+C:\Users\671766\Documents\code\vs2019\sfml birbs\Debug\sfml-system-d-2.dll
+C:\Users\671766\Documents\code\vs2019\sfml birbs\Debug\freetyped.dll
+C:\Users\671766\Documents\code\vs2019\sfml birbs\Debug\zlibd1.dll
+C:\Users\671766\Documents\code\vs2019\sfml birbs\Debug\bz2d.dll
+C:\Users\671766\Documents\code\vs2019\sfml birbs\Debug\libpng16d.dll
+C:\Users\671766\Documents\code\vs2019\sfml birbs\Debug\brotlidec.dll
+C:\Users\671766\Documents\code\vs2019\sfml birbs\Debug\brotlicommon.dll

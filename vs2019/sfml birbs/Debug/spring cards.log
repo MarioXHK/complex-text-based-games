@@ -1,0 +1,14 @@
+﻿  flower.cpp
+C:\Users\671766\Documents\code\vs2019\sfml birbs\flower.cpp(10,25): warning C4552: '<': result of expression not used
+C:\Users\671766\Documents\code\vs2019\sfml birbs\flower.cpp(26,25): warning C4552: '<': result of expression not used
+C:\Users\671766\Documents\code\vs2019\sfml birbs\flower.cpp(37,33): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\671766\Documents\code\vs2019\sfml birbs\flower.cpp(37,24): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\671766\Documents\code\vs2019\sfml birbs\flower.cpp(45,31): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\671766\Documents\code\vs2019\sfml birbs\flower.cpp(45,23): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\671766\Documents\code\vs2019\sfml birbs\flower.cpp(51,25): warning C4552: '<': result of expression not used
+C:\Users\671766\Documents\code\vs2019\sfml birbs\flower.cpp(52,26): warning C4552: '<': result of expression not used
+C:\Users\671766\Documents\code\vs2019\sfml birbs\flower.cpp(53,56): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\671766\Documents\code\vs2019\sfml birbs\flower.cpp(53,34): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+  main.cpp
+  Generating Code...
+  spring cards.vcxproj -> C:\Users\671766\Documents\code\vs2019\sfml birbs\Debug\spring cards.exe
