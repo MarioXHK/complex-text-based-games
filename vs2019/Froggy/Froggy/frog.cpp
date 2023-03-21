@@ -27,11 +27,19 @@ void frog::jump(bool* keys) {
 		yVel = 50;
 	else
 		yVel = 0;
+	if (keys[LEFT])
+		xVel = -50;
+	else if (keys[RIGHT])
+		xVel = 50;
+	else
+		xVel = 0;
+	xpos += xVel;
 	ypos += yVel;
 }
 //MURDER:bangbang:
 void frog::ded() {
 	//play explosion sound here
+	std::cout << "AAAA DEATH!!!\n";
 	Beep(500, 500);
 	lives--;
 	xpos = 500;

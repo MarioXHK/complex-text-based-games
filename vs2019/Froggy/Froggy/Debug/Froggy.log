@@ -1,0 +1,9 @@
+﻿  main.cpp
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(9,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(20,50): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(20,35): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(21,50): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(21,35): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(55,53): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(55,35): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+  Froggy.vcxproj -> C:\Users\671766\Documents\code\vs2019\Froggy\Debug\Froggy.exe
