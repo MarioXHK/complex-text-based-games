@@ -22,15 +22,15 @@ void frog::draw(RenderWindow& window) {
 
 void frog::jump(bool* keys) {
 	if (keys[UP])
-		yVel = -50;
+		yVel = -20;
 	else if (keys[DOWN])
-		yVel = 50;
+		yVel = 20;
 	else
 		yVel = 0;
 	if (keys[LEFT])
-		xVel = -50;
+		xVel = -20;
 	else if (keys[RIGHT])
-		xVel = 50;
+		xVel = 20;
 	else
 		xVel = 0;
 	xpos += xVel;

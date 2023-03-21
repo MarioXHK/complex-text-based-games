@@ -47,13 +47,18 @@ int main() {
 		}
 		//THe laws of physics (physics section)
 		timer++;
-		if (timer > 200) {
+		if (timer > 500) {
 			player.jump(keys);
 			timer = 0;
 		}
 		light.move();
-		if (light.collide(player.returnX(), player.returnY()))
+		if (light.collide(player.returnX(), player.returnY()) || light.collide(player.returnX()+20, player.returnY()) || light.collide(player.returnX(), player.returnY() + 20) || light.collide(player.returnX() + 20, player.returnY() + 20)){
+			player.draw(screen);
+			light.draw(screen);
+			screen.display();
+			screen.clear();
 			player.ded();
+		}
 		//MAKE THINGS APPEAR FOR YOUR PHOTO RECEPTORS (aka render)
 		player.draw(screen);
 		light.draw(screen);
