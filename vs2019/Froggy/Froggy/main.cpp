@@ -47,10 +47,11 @@ int main() {
 		}
 		//THe laws of physics (physics section)
 		timer++;
-		if (timer > 500) {
-			player.jump(keys);
+		if (timer > 500 && (keys[LEFT]|| keys[UP]|| keys[DOWN]||keys[RIGHT])) {
+			player.pac(keys);
 			timer = 0;
 		}
+		player.pacupdate();
 		light.move();
 		if (light.collide(player.returnX(), player.returnY()) || light.collide(player.returnX()+20, player.returnY()) || light.collide(player.returnX(), player.returnY() + 20) || light.collide(player.returnX() + 20, player.returnY() + 20)){
 			player.draw(screen);
