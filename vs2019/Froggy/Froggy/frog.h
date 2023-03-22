@@ -23,6 +23,8 @@ public:
 	void pacupdate();
 	float returnX() { return xpos; }
 	float returnY() { return ypos; }
+	void flaplex(float newx) { if (!pack) xpos += newx; }
+	void flapley(float newy) { if (!pack) xpos += newy; }
 	void ded();
 	int returnLives() { return lives; }
 	void printInfo() { cout << "I am a frog any my position is " << xpos << ", " << ypos << endl; }

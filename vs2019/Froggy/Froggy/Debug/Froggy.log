@@ -1,17 +1,17 @@
 ﻿  frog.cpp
   main.cpp
-C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(9,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(20,50): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(20,35): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(21,50): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(21,35): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(56,53): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(56,35): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(56,109): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(56,90): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(56,165): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(56,144): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(56,228): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(56,205): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(12,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(24,50): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(24,35): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(25,50): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(25,35): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(106,52): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(106,36): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(106,106): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(106,88): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(106,158): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(106,139): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(106,217): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(106,196): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
   Generating Code...
   Froggy.vcxproj -> C:\Users\671766\Documents\code\vs2019\Froggy\Debug\Froggy.exe
