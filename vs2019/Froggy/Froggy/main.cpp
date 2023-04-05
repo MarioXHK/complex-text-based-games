@@ -18,6 +18,9 @@ int main() {
 	frog player;
 	car light(500,500,LEFT);
 	car frend(200, 340, RIGHT, .03f, true);
+	car jerry(450, 450, RIGHT);
+	car harry(100, 200, RIGHT, .03f, true);
+	car berry(500, 100, LEFT, .03f, true);
 	vector<car*> cars;
 	for (int i = 0; i<5;i++)
 		for (int j = 0; j < 1; j++) {
@@ -61,13 +64,17 @@ int main() {
 		player.pacupdate();
 		light.move();
 		frend.move();
+		berry.move();
+		jerry.move();
+		harry.move();
+
 
 		//VIBE CHECKING!!!
-		if (player.returnY() < 380)
+		if (player.returnY() < 380 )
 			aqua = true;
 		else
 			aqua = false;
-		if (aqua && !coolaid(player, frend)) {
+		if (aqua && !coolaid(player, frend) && !coolaid(player, harry) && !coolaid(player, berry)) { //Death to the player if he dares to enter the water without a log
 			screen.draw(WaterWay);
 			light.draw(screen);
 			frend.draw(screen);
@@ -76,10 +83,22 @@ int main() {
 			screen.clear();
 			player.ded();
 		}
-		else if (aqua) {
+		if (coolaid(player, frend)) {
+			player.flaplex(frend.givsped());
+		} else if (coolaid(player, harry)) {
+			player.flaplex(frend.givsped());
+		} else if (coolaid(player, berry)) {
 			player.flaplex(frend.givsped());
 		}
 		if (coolaid(player, light)){
+			screen.draw(WaterWay);
+			light.draw(screen);
+			frend.draw(screen);
+			player.draw(screen);
+			screen.display();
+			screen.clear();
+			player.ded();
+		} else if (coolaid(player, jerry)) {
 			screen.draw(WaterWay);
 			light.draw(screen);
 			frend.draw(screen);
@@ -92,6 +111,9 @@ int main() {
 		screen.draw(WaterWay);
 		light.draw(screen);
 		frend.draw(screen);
+		jerry.draw(screen);
+		harry.draw(screen);
+		berry.draw(screen);
 		player.draw(screen);
 		screen.display();
 		screen.clear();

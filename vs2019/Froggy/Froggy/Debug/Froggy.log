@@ -1,17 +1,15 @@
-﻿  frog.cpp
-  main.cpp
+﻿  main.cpp
 C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(12,12): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(24,50): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(24,35): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(25,50): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(25,35): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
-C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(106,52): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(106,36): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(106,106): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(106,88): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(106,158): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(106,139): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(106,217): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(106,196): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-  Generating Code...
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(27,50): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(27,35): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(28,50): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(28,35): warning C4244: 'argument': conversion from 'int' to 'float', possible loss of data
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(128,52): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(128,36): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(128,106): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(128,88): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(128,158): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(128,139): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(128,217): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
+C:\Users\671766\Documents\code\vs2019\Froggy\Froggy\main.cpp(128,196): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
   Froggy.vcxproj -> C:\Users\671766\Documents\code\vs2019\Froggy\Debug\Froggy.exe
