@@ -6,12 +6,14 @@
 using namespace sf;
 
 bool coolaid(frog play, car thing);
+bool cooler(frog play, vector<car*>::iterator thang);
 
 int main() {
 	//game variables and setup
 	srand(time(NULL));
 	bool aqua = false;
 	bool keys[] = { false, false, false, false };
+	bool isdie = false;
 	int timer = 0;
 	//SFML boilerplate stuff
 	RenderWindow screen(VideoMode(1000, 1000), "Froggers.");
@@ -22,11 +24,19 @@ int main() {
 	car harry(100, 200, RIGHT, .03f, true);
 	car berry(500, 100, LEFT, .03f, true);
 	vector<car*> cars;
+	vector<car*> logs;
 	for (int i = 0; i<5;i++)
-		for (int j = 0; j < 1; j++) {
+		for (int j = 0; j < 2; j++) {
 			cars.push_back(new car(i * 400 + 100, j * 200 + 500, LEFT));
 			cars.push_back(new car(i * 300 + 200, j * 200 + 600, RIGHT));
 		}
+
+	for (int i = 0; i < 5; i++)
+		for (int j = 0; j < 2; j++) {
+			logs.push_back(new car(i * 400 + 100, j * 200 + 50, LEFT, .03f, true));
+			logs.push_back(new car(i * 300 + 200, j * 200 + 150, RIGHT, .03f, true));
+		}
+
 	RectangleShape WaterWay(Vector2f(1000, 400));
 	WaterWay.setFillColor(Color(10, 0, 255));
 	WaterWay.setPosition(0, 0);
@@ -62,62 +72,52 @@ int main() {
 			timer = 0;
 		}
 		player.pacupdate();
-		light.move();
-		frend.move();
-		berry.move();
-		jerry.move();
-		harry.move();
-
+		for (vector<car*>::iterator i = cars.begin(); i != cars.end(); i++) {
+			(*i)->move();
+		}
+		for (vector<car*>::iterator i = logs.begin(); i != logs.end(); i++) {
+			(*i)->move();
+		}
 
 		//VIBE CHECKING!!!
 		if (player.returnY() < 380 )
 			aqua = true;
 		else
 			aqua = false;
-		if (aqua && !coolaid(player, frend) && !coolaid(player, harry) && !coolaid(player, berry)) { //Death to the player if he dares to enter the water without a log
-			screen.draw(WaterWay);
-			light.draw(screen);
-			frend.draw(screen);
-			player.draw(screen);
-			screen.display();
-			screen.clear();
-			player.ded();
+		for (vector<car*>::iterator i = logs.begin(); i != logs.end(); i++) {
+			if (aqua && !cooler(player, i)) { //Death to the player if he dares to enter the water without a log
+				isdie = true;
+			}
 		}
-		if (coolaid(player, frend)) {
-			player.flaplex(frend.givsped());
-		} else if (coolaid(player, harry)) {
-			player.flaplex(frend.givsped());
-		} else if (coolaid(player, berry)) {
-			player.flaplex(frend.givsped());
+		for (vector<car*>::iterator i = cars.begin(); i != cars.end(); i++) {
+			if (cooler(player,i))
+				isdie = true;
 		}
-		if (coolaid(player, light)){
-			screen.draw(WaterWay);
-			light.draw(screen);
-			frend.draw(screen);
-			player.draw(screen);
-			screen.display();
-			screen.clear();
-			player.ded();
-		} else if (coolaid(player, jerry)) {
-			screen.draw(WaterWay);
-			light.draw(screen);
-			frend.draw(screen);
-			player.draw(screen);
-			screen.display();
-			screen.clear();
-			player.ded();
-		}
+
 		//MAKE THINGS APPEAR FOR YOUR PHOTO RECEPTORS (aka render)
 		screen.draw(WaterWay);
-		light.draw(screen);
-		frend.draw(screen);
-		jerry.draw(screen);
-		harry.draw(screen);
-		berry.draw(screen);
+		
+
+		
+		for (vector<car*>::iterator i = logs.begin(); i != logs.end(); i++) {
+			(*i)->draw(screen);
+		}
 		player.draw(screen);
+		for (vector<car*>::iterator i = cars.begin(); i != cars.end(); i++) {
+			(*i)->draw(screen);
+		}
+
+
+
 		screen.display();
 		screen.clear();
-		
+
+		//EXECUTE THE PLAYER
+		if (isdie) {
+			isdie = false;
+			player.ded();
+		}
+
 
 	}//END GAME LAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA-
 	std::cout << "Gaem Ovrre.\n";
@@ -126,4 +126,7 @@ int main() {
 
 bool coolaid(frog play, car thing) {
 	return (thing.collide(play.returnX(), play.returnY()) || thing.collide(play.returnX() + 20, play.returnY()) || thing.collide(play.returnX(), play.returnY() + 20) || thing.collide(play.returnX() + 20, play.returnY() + 20));
+}
+bool cooler(frog play, vector<car*>::iterator thang) {
+	return ((*thang)->collide(play.returnX(), play.returnY()) || (*thang)->collide(play.returnX() + 20, play.returnY()) || (*thang)->collide(play.returnX(), play.returnY() + 20) || (*thang)->collide(play.returnX() + 20, play.returnY() + 20));
 }
