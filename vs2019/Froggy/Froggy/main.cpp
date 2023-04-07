@@ -81,12 +81,12 @@ int main() {
 
 		//VIBE CHECKING!!!
 		if (player.returnY() < 380 )
-			aqua = true;
-		else
-			aqua = false;
+			isdie = true;
 		for (vector<car*>::iterator i = logs.begin(); i != logs.end(); i++) {
-			if (aqua && !cooler(player, i)) { //Death to the player if he dares to enter the water without a log
-				isdie = true;
+			if (cooler(player, i)) { //Death to the player if he dares to enter the water without a log
+				isdie = false;
+				player.flaplex((*i)->givsped());
+				break;
 			}
 		}
 		for (vector<car*>::iterator i = cars.begin(); i != cars.end(); i++) {
