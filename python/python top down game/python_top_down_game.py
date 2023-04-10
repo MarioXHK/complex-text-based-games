@@ -115,7 +115,7 @@ class sheep:
         if self.caught:
             return #don't draw them if they're already caught!
         if self.simple:
-            pygame.draw.rect(screen, (250, 100, 100), (sheep1[0], sheep1[1], 40, 40))
+            pygame.draw.rect(screen, (250, 100, 100), (self.xpos, self.ypos, 40, 40))
         else:
             screen.blit(SheepPic, (self.xpos, self.ypos))
 
@@ -138,9 +138,12 @@ sheep0 = sheep(200, 400,True)
 sheep1 = sheep(200, 400)
 #make more sheeps here!
 sheeps = []
-for i in range(20):
+sheepnum = 30
+el = random.randint(1,sheepnum)
+for i in range(sheepnum - el):
     sheeps.append(sheep(random.randrange(50,700),random.randrange(50,700)))
-
+for i in range(el):
+    sheeps.append(sheep(random.randrange(50,700),random.randrange(50,700),True))
 
 #player variables
 xpos = 500 #xpos of player
