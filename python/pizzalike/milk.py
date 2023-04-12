@@ -47,7 +47,7 @@ class player:#THE PLAYER OF THE GAME
             self.vy = -12
     def collision(self,theMap, kind):
         hitable = {1,2}
-        
+        #Trust me this takes up a lot less space
         oversimpY = int((self.y)/40)
         oversimpYP = int((self.y+60)/40)
         oversimpYL = int((self.y+2)/40)
@@ -66,7 +66,7 @@ class player:#THE PLAYER OF THE GAME
                     return True
                 if (i in [theMap[oversimpYL][oversimpXPrl],theMap[oversimpYPL][oversimpXPrl]]) and self.vy > -0.1 and i in hitable and kind == 3:
                     return True
-        except:
+        except:#If an error occures (most likely out of bounds) It'll teleport the player back the start
             print("OUT OF BOUNDS! Re-positioning!")
             self.x = 400
             self.y = 400
@@ -94,19 +94,20 @@ class player:#THE PLAYER OF THE GAME
             
         else:
             self.vy += .2
+            #if the player let go of the jump early
             if self.fasterDown:
                 self.vy += .5
         
-        if self.collision(theMap,1):
+        if self.collision(theMap,1):#Ceiling collision
             self.vy = 0
-        if self.collision(theMap,2):
+        if self.collision(theMap,2):#Wall collision (2 and 3)
             self.x = (int((self.x+40)/40))*40
             self.vx = 0
         if self.collision(theMap,3):
             self.x = (int((self.x+40)/40))*40-40
             self.vx = 0
         
-        
+        #Terminal Velocity
         if self.vy > 10:
             self.vy = 10
         
@@ -172,7 +173,7 @@ while gaming:
                 keys[0]=True
             elif event.key == pygame.K_RIGHT:
                 keys[1]=True
-            if event.key == pygame.K_SPACE:
+            if event.key == pygame.K_UP:
                 keys[2]=True
             if event.key == pygame.K_DOWN:
                 keys[3]=True
@@ -183,7 +184,7 @@ while gaming:
                 keys[0]=False
             elif event.key == pygame.K_RIGHT:
                 keys[1]=False
-            if event.key == pygame.K_SPACE:
+            if event.key == pygame.K_UP:
                 keys[2]=False
             if event.key == pygame.K_DOWN:
                 keys[3]=False
@@ -204,7 +205,7 @@ while gaming:
     
     #THE LAWS OF PHYSICS AKA HOW STUFF MOVES!
     weegee.move(map)
-    #Scrolling??
+    #Scrolling?? Hopefully
     if weegee.x > 400 and weegee.x < 1600:
         offset[0] = weegee.x - 400
     
