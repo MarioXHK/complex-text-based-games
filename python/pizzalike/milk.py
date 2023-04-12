@@ -56,15 +56,20 @@ class player:#THE PLAYER OF THE GAME
         oversimpXP = int((self.x+38)/40)
         oversimpXrl = int((self.x)/40)
         oversimpXPrl = int((self.x+40)/40)
-        for i in range(1,4):
-            if (i in [theMap[oversimpYP][oversimpX],theMap[oversimpYP][oversimpXP]]) and self.vy > -0.1 and kind == 0:
-                return True
-            if (i in [theMap[oversimpY][oversimpX],theMap[oversimpY][oversimpXP]]) and self.vy < 0.1 and i in hitable and kind == 1:
-                return True
-            if (i in [theMap[oversimpYL][oversimpXrl],theMap[oversimpYPL][oversimpXrl]]) and self.vy > -0.1 and i in hitable and kind == 2:
-                return True
-            if (i in [theMap[oversimpYL][oversimpXPrl],theMap[oversimpYPL][oversimpXPrl]]) and self.vy > -0.1 and i in hitable and kind == 3:
-                return True
+        try:
+            for i in range(1,4):
+                if (i in [theMap[oversimpYP][oversimpX],theMap[oversimpYP][oversimpXP]]) and self.vy > -0.1 and kind == 0:
+                    return True
+                if (i in [theMap[oversimpY][oversimpX],theMap[oversimpY][oversimpXP]]) and self.vy < 0.1 and i in hitable and kind == 1:
+                    return True
+                if (i in [theMap[oversimpYL][oversimpXrl],theMap[oversimpYPL][oversimpXrl]]) and self.vy > -0.1 and i in hitable and kind == 2:
+                    return True
+                if (i in [theMap[oversimpYL][oversimpXPrl],theMap[oversimpYPL][oversimpXPrl]]) and self.vy > -0.1 and i in hitable and kind == 3:
+                    return True
+        except:
+            print("OUT OF BOUNDS! Re-positioning!")
+            self.x = 400
+            self.y = 400
         return False
         
     def move(self,theMap):
@@ -80,12 +85,7 @@ class player:#THE PLAYER OF THE GAME
                 if self.vx > -0.1:
                     self.vx = 0
         #Collision--------------------------------
-        if self.collision(theMap,2):
-            self.x = (int((self.x+40)/40))*40
-            self.vx = 0
-        elif self.collision(theMap,3):
-            self.x = (int((self.x+40)/40))*40-41
-            self.vx = 0
+        
         #Gravity stuff
         if self.collision(theMap,0):
             self.onGround = True
@@ -99,13 +99,18 @@ class player:#THE PLAYER OF THE GAME
         
         if self.collision(theMap,1):
             self.vy = 0
+        if self.collision(theMap,2):
+            self.x = (int((self.x+40)/40))*40
+            self.vx = 0
+        if self.collision(theMap,3):
+            self.x = (int((self.x+40)/40))*40-40
+            self.vx = 0
+        
         
         if self.vy > 10:
             self.vy = 10
         
-        if self.x < 0:
-            self.x = 0
-            self.vx = 0
+        
         self.fasterDown = False
         self.x += self.vx
         self.y += self.vy
@@ -114,9 +119,13 @@ class player:#THE PLAYER OF THE GAME
             self.onGround = True
             self.vy = 0
             self.y = (int((self.y+60)/40))*40-60
-        
+        if self.collision(theMap,1):
+            self.vy = 0
         if self.collision(theMap,2):
             self.x = (int((self.x+40)/40))*40
+            self.vx = 0
+        if self.collision(theMap,3):
+            self.x = (int((self.x+40)/40))*40-40
             self.vx = 0
         #Makes the movement less controllable while in air
         if self.onGround:
@@ -130,7 +139,7 @@ weegee = player(400,400,0,0)#THe player you play as
 keys = [False,False,False,False,False]#For input
 gaming = True#Alright, we're gaming
 
-offset = 0
+offset = [0,0]
 
 #MAP: 1 is grass, 2 is brick
 map = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0 ,0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0 ,0, 0,0,0,0,0,0,0,0,0,0],
@@ -195,18 +204,22 @@ while gaming:
     
     #THE LAWS OF PHYSICS AKA HOW STUFF MOVES!
     weegee.move(map)
+    #Scrolling??
+    if weegee.x > 400 and weegee.x < 1600:
+        offset[0] = weegee.x - 400
+    
     #The part where things get put on the screen, aka --==XXXTHE RENDER SECTIONXXX==--
     screen.fill((60,0,150)) #wipe screen so it doesn't smear
     
     for i in range (len(map)):
         for j in range(len(map[0])):
             if map[i][j]==1:
-                pygame.draw.rect(screen, (120, 67, 10), (40*j,40*i, 40, 40))
+                pygame.draw.rect(screen, (120, 67, 10), (40*j-offset[0],40*i, 40, 40))
             if map[i][j]==2:
-                pygame.draw.rect(screen, (181, 58, 31), (40*j,40*i, 40, 40))
+                pygame.draw.rect(screen, (181, 58, 31), (40*j-offset[0],40*i, 40, 40))
             if map[i][j]==3:
-                pygame.draw.rect(screen, (255, 255, 255), (40*j,40*i, 40, 5))
+                pygame.draw.rect(screen, (255, 255, 255), (40*j-offset[0],40*i, 40, 5))
     
     
-    pygame.draw.rect(screen, (100, 200, 100), (weegee.x, weegee.y, 40, 60))
+    pygame.draw.rect(screen, (100, 200, 100), (weegee.x-offset[0], weegee.y, 40, 60))
     pygame.display.flip()
