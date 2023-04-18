@@ -20,10 +20,14 @@ class player:#THE PLAYER OF THE GAME
         self.maxrun = 4
         self.onGround = True
         self.onRecord = [True,False]
-    def controlhorz(self,dirr,run):
+        self.crouch = False
+    def controlhorz(self,dirr,run,sneak):
         self.controlling = True
+        self.crouch = sneak
         #Moves you in both directions
-        if run:
+        if sneak:
+            self.maxrun = 2
+        elif run:
             self.maxrun = 8
         else:
             self.maxrun = 4
@@ -48,23 +52,25 @@ class player:#THE PLAYER OF THE GAME
     def collision(self,theMap, kind):
         hitable = {1,2}
         #Trust me this takes up a lot less space
-        oversimpY = int((self.y)/40)
-        oversimpYP = int((self.y+60)/40)
-        oversimpYL = int((self.y+2)/40)
-        oversimpYPL = int((self.y+58)/40)
-        oversimpX = int((self.x+2)/40)
-        oversimpXP = int((self.x+38)/40)
-        oversimpXrl = int((self.x)/40)
-        oversimpXPrl = int((self.x+40)/40)
+        oversimpY = int((self.y)/40)#Oversimplified y top
+        oversimpYP = int((self.y+60)/40)#Oversimplified y bottom
+        oversimpYL = int((self.y+2)/40)#Oversimplified Impercise Y top
+        oversimpYPL = int((self.y+58)/40)#Oversimplified Impercise Y bottom
+        oversimpX = int((self.x+2)/40)#Oversimplified Impercise X top
+        oversimpXP = int((self.x+38)/40)#Oversimplified Impercise X bottom
+        oversimpXrl = int((self.x)/40)#Oversimplified X top
+        oversimpXPrl = int((self.x+40)/40)#Oversimplified X bottom
+        oversimpYall = int((self.y+20)/40)#Oversimplified Y again
+        #This is gotten out of hand I think I'll just put all these valuables in a tuple next update
         try:
             for i in range(1,4):
                 if (i in [theMap[oversimpYP][oversimpX],theMap[oversimpYP][oversimpXP]]) and self.vy > -0.1 and kind == 0:
                     return True
                 if (i in [theMap[oversimpY][oversimpX],theMap[oversimpY][oversimpXP]]) and self.vy < 0.1 and i in hitable and kind == 1:
                     return True
-                if (i in [theMap[oversimpYL][oversimpXrl],theMap[oversimpYPL][oversimpXrl]]) and self.vy > -0.1 and i in hitable and kind == 2:
+                if (i in [theMap[oversimpYL][oversimpXrl],theMap[oversimpYPL][oversimpXrl],theMap[oversimpYall][oversimpXrl]]) and self.vx < 0.1 and i in hitable and kind == 2:
                     return True
-                if (i in [theMap[oversimpYL][oversimpXPrl],theMap[oversimpYPL][oversimpXPrl]]) and self.vy > -0.1 and i in hitable and kind == 3:
+                if (i in [theMap[oversimpYL][oversimpXPrl],theMap[oversimpYPL][oversimpXPrl],theMap[oversimpYall][oversimpXPrl]]) and self.vx > -0.1 and i in hitable and kind == 3:
                     return True
         except:#If an error occures (most likely out of bounds) It'll teleport the player back the start
             print("OUT OF BOUNDS! Re-positioning!")
@@ -100,6 +106,8 @@ class player:#THE PLAYER OF THE GAME
         
         if self.collision(theMap,1):#Ceiling collision
             self.vy = 0
+            self.y = (int((self.y)/40))*40+40
+            
         if self.collision(theMap,2):#Wall collision (2 and 3)
             self.x = (int((self.x+40)/40))*40
             self.vx = 0
@@ -120,8 +128,22 @@ class player:#THE PLAYER OF THE GAME
             self.onGround = True
             self.vy = 0
             self.y = (int((self.y+60)/40))*40-60
-        if self.collision(theMap,1):
+        if self.collision(theMap,1):#Ceiling collision
             self.vy = 0
+            self.y = (int((self.y)/40))*40+40
+        if self.collision(theMap,2):
+            self.x = (int((self.x+40)/40))*40
+            self.vx = 0
+        if self.collision(theMap,3):
+            self.x = (int((self.x+40)/40))*40-40
+            self.vx = 0
+        if self.collision(theMap,0):
+            self.onGround = True
+            self.vy = 0
+            self.y = (int((self.y+60)/40))*40-60
+        if self.collision(theMap,1):#Ceiling collision
+            self.vy = 0
+            self.y = (int((self.y)/40))*40+40
         if self.collision(theMap,2):
             self.x = (int((self.x+40)/40))*40
             self.vx = 0
@@ -158,49 +180,49 @@ def coolgen(mape):
                 if mape[i][j+1][0] in nonsolid:#checks if anything is to the right of it
                     mape[i][j][4]=(True)
     return mape
+#Scans the map to see where to spawn the player ig
+def scanspawn(emap):
+    for i in range(len(emap)):
+        for j in range(len(emap[0])):
+            if emap[i][j] == 9:
+                return [i*40,j*40+20]
+    return [400,400]
 #SETTING UP THE VARIABLES!
-weegee = player(400,400,0,0)#THe player you play as
 keys = [False,False,False,False,False]#For input
 gaming = True#Alright, we're gaming
 
 offset = [0,0]
 
 #MAP: 1 is grass, 2 is brick
-map = [[[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0] ,[0] ,[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0] ,[0] ,[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0]],
-       [[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0] ,[0] ,[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0] ,[0] ,[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0]],
-       [[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [1], [0], [0] ,[0] ,[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0] ,[0] ,[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0]],
-       [[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0] ,[0] ,[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0] ,[0] ,[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0]],
-       [[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0] ,[0] ,[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0] ,[0] ,[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0]],
-       [[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0] ,[0] ,[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0] ,[0] ,[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0]],
-       [[0], [0], [0], [0], [0], [0], [0], [0], [2], [1], [2], [1], [2] ,[0] ,[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0] ,[0] ,[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0]],
-       [[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0] ,[0] ,[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0] ,[0] ,[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0]],
-       [[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0] ,[0] ,[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0] ,[0] ,[0], [0], [0], [0], [0], [0], [0], [0], [2], [2], [0]],
-       [[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0] ,[3] ,[3], [3], [3], [0], [0], [0], [2], [2], [0], [0], [0], [0], [0], [0], [0] ,[0] ,[0], [0], [0], [0], [0], [0], [0], [2], [2], [2], [0]],
-       [[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0] ,[0] ,[0], [0], [0], [0], [0], [2], [2], [2], [2], [0], [0], [0], [0], [0], [0] ,[0] ,[0], [0], [0], [0], [0], [0], [2], [2], [2], [2], [0]],
-       [[0], [0], [2], [2], [2], [0], [0], [0], [0], [0], [0], [0], [0] ,[0] ,[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0] ,[0] ,[0], [0], [0], [0], [0], [2], [2], [2], [2], [2], [0]],
-       [[0], [0], [0], [0], [0], [0], [0], [0], [1], [0], [0], [0], [0] ,[0] ,[2], [2], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [0] ,[0] ,[0], [0], [0], [0], [2], [2], [2], [2], [2], [2], [0]],
-       [[1], [0], [0], [0], [0], [0], [0], [0], [1], [0], [0], [0], [1] ,[0] ,[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [2], [0], [0], [0], [2] ,[2] ,[2], [0], [0], [2], [2], [2], [2], [2], [2], [2], [0]],
-       [[1], [1], [0], [0], [0], [0], [0], [0], [1], [0], [2], [2], [1] ,[2] ,[0], [0], [0], [0], [0], [0], [0], [0], [0], [0], [2], [2], [0], [0], [0] ,[2] ,[0], [0], [2], [2], [2], [2], [2], [2], [2], [2], [0]],
-       [[1], [1], [1], [1], [1], [1], [1], [1], [1], [1], [1], [1], [1] ,[1] ,[1], [1], [1], [1], [1], [1], [1], [1], [1], [1], [1], [1], [1], [1], [1] ,[1] ,[1], [1], [1], [1], [1], [1], [1], [1], [1], [1], [0]]]
-print(map)
-map = coolgen(map)
-print(map)
-map = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0 ,0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0 ,0, 0,0,0,0,0,0,0,0,0,0],
-       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0 ,0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0 ,0, 0,0,0,0,0,0,0,0,0,0],#DELETE THIS ONCE THE ABOVE IS SORTED!1
-       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0 ,0 ,0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0 ,0, 0,0,0,0,0,0,0,0,0,0],
-       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0 ,0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0 ,0, 0,0,0,0,0,0,0,0,0,0],
-       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0 ,0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0 ,0, 0,0,0,0,0,0,0,0,0,0],
-       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0 ,0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0 ,0, 0,0,0,0,0,0,0,0,0,0],#DELETE THIS ONCE THE ABOVE IS SORTED!1
-       [0, 0, 0, 0, 0, 0, 0, 0, 2, 1, 2, 1, 2 ,0 ,0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0 ,0, 0,0,0,0,0,0,0,0,0,0],
-       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0 ,0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0 ,0, 0,0,0,0,0,0,0,0,0,0],
-       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0 ,0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0 ,0, 0,0,0,0,0,0,0,2,2,0],
-       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,3 ,3, 3,3, 0, 0, 0, 2, 2, 0, 0, 0, 0, 0, 0, 0 ,0 ,0, 0,0,0,0,0,0,2,2,2,0],
-       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0 ,0, 0,0, 0, 0, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0 ,0 ,0, 0,0,0,0,0,2,2,2,2,0],#DELETE THIS ONCE THE ABOVE IS SORTED!1
-       [0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0 ,0 ,0, 0,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0 ,0, 0,0,0,0,2,2,2,2,2,0],
-       [0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0 ,0 ,2, 2,0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ,0 ,0, 0,0,0,2,2,2,2,2,2,0],
-       [1, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1 ,0 ,0, 0,0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 0, 0, 2 ,2 ,2, 0,0,2,2,2,2,2,2,2,0],
-       [1, 1, 0, 0, 0, 0, 0, 0, 1, 0, 2, 2, 1 ,2 ,0, 0,0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0 ,2 ,0, 0,2,2,2,2,2,2,2,2,0],#DELETE THIS ONCE THE ABOVE IS SORTED!1
-       [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ,1 ,1, 1,1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 ,1 ,1, 1,1,1,1,1,1,1,1,1,0]]
+map = [[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+       [1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+       [1,0,0,0,0,0,0,0,2,1,2,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,3,3,3,3,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,0],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,0],
+       [1,0,2,2,2,0,0,0,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,0],
+       [1,0,0,0,0,0,0,0,1,0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,2,0],
+       [1,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,2,2,2,0,0,2,2,2,2,2,2,2,0],
+       [1,1,0,0,0,0,0,0,1,0,2,2,1,2,0,0,0,0,0,0,0,0,0,0,2,2,0,0,0,2,0,0,2,2,2,2,2,2,2,2,0],
+       [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]]
+startpoint = scanspawn(map)
+weegee = player(startpoint[0],startpoint[1],0,0)#THe player you play as
+                
 while gaming:
     for event in pygame.event.get(): #2b- i mean event queue
         if event.type == pygame.QUIT:
@@ -239,28 +261,29 @@ while gaming:
     if (not keys[2]) and weegee.vy < -2:
         weegee.fasterDown = True
     if keys[0]:
-        weegee.controlhorz(False,keys[4])
+        weegee.controlhorz(False,keys[4],keys[3])
     elif keys[1]:
-        weegee.controlhorz(True,keys[4])
+        weegee.controlhorz(True,keys[4],keys[3])
     
     #THE LAWS OF PHYSICS AKA HOW STUFF MOVES!
     weegee.move(map)
     #Scrolling?? Hopefully
-    if weegee.x > 400 and weegee.x < 1600:
+    if weegee.x > 400 and weegee.x < len(map[0])*40-400:
         offset[0] = weegee.x - 400
-    
+    if weegee.y > 400 and weegee.y < len(map)*40-400:
+        offset[1] = weegee.y - 400
     #The part where things get put on the screen, aka --==XXXTHE RENDER SECTIONXXX==--
     screen.fill((60,0,150)) #wipe screen so it doesn't smear
     
     for i in range (len(map)):
         for j in range(len(map[0])):
             if map[i][j]==1:
-                pygame.draw.rect(screen, (120, 67, 10), (40*j-offset[0],40*i, 40, 40))
+                pygame.draw.rect(screen, (120, 67, 10), (40*j-offset[0],40*i-offset[1], 40, 40))
             if map[i][j]==2:
-                pygame.draw.rect(screen, (181, 58, 31), (40*j-offset[0],40*i, 40, 40))
+                pygame.draw.rect(screen, (181, 58, 31), (40*j-offset[0],40*i-offset[1], 40, 40))
             if map[i][j]==3:
-                pygame.draw.rect(screen, (255, 255, 255), (40*j-offset[0],40*i, 40, 5))
+                pygame.draw.rect(screen, (255, 255, 255), (40*j-offset[0],40*i-offset[1], 40, 5))
     
     
-    pygame.draw.rect(screen, (100, 200, 100), (weegee.x-offset[0], weegee.y, 40, 60))
+    pygame.draw.rect(screen, (100, 200, 100), (weegee.x-offset[0], weegee.y-offset[1], 40, 60))
     pygame.display.flip()
