@@ -48,7 +48,7 @@ class player:#THE PLAYER OF THE GAME
                     self.vx = 0-self.maxrun
     def jump(self):
         if self.onGround:
-            self.vy = -12
+            self.vy = -10
     def collision(self,theMap, kind):
         #Trust me this takes up a lot less space
         osimp = ((int((self.x)/40),int((self.y)/40),int((self.x+40)/40),int((self.y+60)/40),int((self.y+20)/40)),(int((self.x+2)/40),int((self.y+2)/40),int((self.x+38)/40),int((self.y+58)/40)))
@@ -58,7 +58,7 @@ class player:#THE PLAYER OF THE GAME
         '''
         oversimpYall = int((self.y+20)/40)#Oversimplified Y divided by ysize
         try:
-            if (theMap[osimp[0][3]][osimp[1][0]][1] or theMap[osimp[0][3]][osimp[1][2]][1]) and self.vy > -0.1 and kind == 0:
+            if (theMap[osimp[0][3]][osimp[1][0]][1] or theMap[osimp[0][3]][osimp[1][2]][1]) and self.vy > -0.1 and (self.y-60) % 40 <= 5 and kind == 0:
                 return True
             if (theMap[osimp[0][1]][osimp[1][0]][2] or theMap[osimp[0][1]][osimp[1][2]][2]) and self.vy < 0.1 and kind == 1:
                 return True
@@ -85,105 +85,64 @@ class player:#THE PLAYER OF THE GAME
                 if self.vx > -0.1:
                     self.vx = 0
         #Collision--------------------------------
-        
-        #Gravity stuff
-        if self.collision(theMap,0):
-            self.onGround = True
-            self.vy = 0
-            self.y = (int((self.y+60)/40))*40-60
-            
-        else:
-            self.vy += .2
+        if not self.collision(theMap,0):
+            self.vy += .3
             #if the player let go of the jump early
             if self.fasterDown:
-                self.vy += .5
-        
-        if self.collision(theMap,1):#Ceiling collision
-            self.vy = 0
-            self.y = (int((self.y)/40))*40+40
+                self.vy += 0.6
+        for i in range(10):
+        #Gravity stuff
+            if self.collision(theMap,0):
+                self.onGround = True
+                self.vy = 0
+                self.y = (int((self.y+60)/40))*40-60
             
-        if self.collision(theMap,2):#Wall collision (2 and 3)
-            self.x = (int((self.x+40)/40))*40
-            self.vx = 0
-        if self.collision(theMap,3):
-            self.x = (int((self.x+40)/40))*40-40
-            self.vx = 0
-        
-        #Terminal Velocity
-        if self.vy > 10:
-            self.vy = 10
-        
-        
-        self.fasterDown = False
-        self.x += self.vx
-        self.y += self.vy
-        #Corrections
-        if self.collision(theMap,0):
-            self.onGround = True
-            self.vy = 0
-            self.y = (int((self.y+60)/40))*40-60
-        if self.collision(theMap,1):#Ceiling collision
-            self.vy = 0
-            self.y = (int((self.y)/40))*40+40
-        if self.collision(theMap,2):
-            self.x = (int((self.x+40)/40))*40
-            self.vx = 0
-        if self.collision(theMap,3):
-            self.x = (int((self.x+40)/40))*40-40
-            self.vx = 0
-        if self.collision(theMap,0):
-            self.onGround = True
-            self.vy = 0
-            self.y = (int((self.y+60)/40))*40-60
-        if self.collision(theMap,1):#Ceiling collision
-            self.vy = 0
-            self.y = (int((self.y)/40))*40+40
-        if self.collision(theMap,2):
-            self.x = (int((self.x+40)/40))*40
-            self.vx = 0
-        if self.collision(theMap,3):
-            self.x = (int((self.x+40)/40))*40-40
-            self.vx = 0
-        #Makes the movement less controllable while in air
-        if self.onGround:
-            self.slip = self.defslip
-        else:
-            self.slip = self.defslip/3
-#Generate collisionmap function for maps when you're lazy! goes like [up, down, left, right]
-def coolgen(mape):
-    nonsolid = {0,3,9}
-    for i in range(len(mape)):
-        for j in range(len(mape[0])):
-            for k in range(4):#Sets up the 4 things
-                mape[i][j].append(False)
-            if mape[i][j][0] in nonsolid:#For when something isn't solid
-                if mape[i][j][0] == 3:
-                    mape[i][j][1] = True
-                continue
-            #Now for all the solid things
-            if i > 0:
-                if mape[i-1][j][0] in nonsolid:#checks if anything is above it
-                    mape[i][j][1]=(True)
-            if i < len(mape)-1:
-                if mape[i+1][j][0] in nonsolid:#checks if anything is below it
-                    mape[i][j][2]=(True)
-            if j > 0:
-                if mape[i][j-1][0] in nonsolid:#checks if anything is to the left of it
-                    mape[i][j][3]=(True)
-            if j < len(mape[0])-1:
-                if mape[i][j+1][0] in nonsolid:#checks if anything is to the right of it
-                    mape[i][j][4]=(True)
-    return mape
+            if self.collision(theMap,1):#Ceiling collision
+                self.vy = 0
+                self.y = (int((self.y)/40))*40+40
+                
+            if self.collision(theMap,2):#Wall collision (2 and 3)
+                self.x = (int((self.x+40)/40))*40
+                self.vx = 0
+            if self.collision(theMap,3):
+                self.x = (int((self.x+40)/40))*40-40
+                self.vx = 0
+            
+            #Terminal Velocity
+            if self.vy > 10:
+                self.vy = 10
+            self.fasterDown = False
+            self.x += self.vx/10
+            self.y += self.vy/10
+            #Corrections
+            
+            #Makes the movement less controllable while in air
+            if self.onGround:
+                self.slip = self.defslip
+            else:
+                self.slip = self.defslip/3
+    def draw(self, off):
+        pygame.draw.rect(screen, (100, 200, 100), (self.x-off[0], self.y-off[1], 40, 60))
+
+
+
+
+
 #Scans the map to see where to spawn the player ig
+
 def scanspawn(emap):
     for i in range(len(emap)):
         for j in range(len(emap[0])):
             if emap[i][j] == 9:
                 return [i*40,j*40+20]
     return [400,400]
+
+
+
 #Generate collisionmap function for maps when you're lazy! goes like [up, down, left, right]
+
 def coolgen(mape):
-    nonsolid = {0,3}
+    nonsolid = {0,3,9}
     
     for i in range(len(mape)):
         for j in range(len(mape[0])):
@@ -220,32 +179,32 @@ debug = False
 offset = [0,0]
 
 #MAP: 1 is grass, 2 is brick
-map = [[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
-       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-       [1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-       [1,0,0,0,0,0,0,0,2,1,2,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0],
-       [1,0,0,0,0,0,0,0,0,0,0,0,0,3,3,3,3,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,0],
-       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,0],
-       [1,0,2,2,2,0,0,0,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,0],
-       [1,0,0,0,0,0,0,0,1,0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,2,0],
-       [1,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,2,2,2,0,0,2,2,2,2,2,2,2,0],
-       [1,1,0,0,0,0,0,0,1,0,2,2,1,2,0,0,0,0,0,0,0,0,0,0,2,2,0,0,0,2,0,0,2,2,2,2,2,2,2,2,0],
-       [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]]
+map = [[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+       [1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+       [1,0,0,0,0,0,0,0,2,1,2,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,0,1],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,3,3,3,3,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,0,1],
+       [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,0,1],
+       [1,0,2,2,2,0,0,0,9,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,0,1],
+       [1,0,0,0,0,0,0,0,1,0,0,0,0,0,2,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,2,2,2,2,2,0,1],
+       [1,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,2,2,2,0,0,2,2,2,2,2,2,2,0,1],
+       [1,1,0,0,0,0,0,0,1,0,2,2,1,2,0,0,0,0,0,0,0,0,0,0,2,2,0,0,0,2,0,0,2,2,2,2,2,2,2,2,0,1],
+       [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]]
 startpoint = scanspawn(map)
 weegee = player(400,400,0,0)#THe player you play as
 
@@ -286,7 +245,7 @@ while gaming:
     weegee.controlling = False#For when the player isn't controlling
     if keys[2]:
         weegee.jump()
-    if (not keys[2]) and weegee.vy < -2:
+    if (not keys[2]) and weegee.vy < -0.5:
         weegee.fasterDown = True
     if keys[0]:
         weegee.controlhorz(False,keys[4],keys[3])
@@ -322,5 +281,5 @@ while gaming:
                     pygame.draw.rect(screen, (255, 0, 0), ((40*j-offset[0])+35,(40*i-offset[1]), 5, 40))
     
     
-    pygame.draw.rect(screen, (100, 200, 100), (weegee.x-offset[0], weegee.y-offset[1], 40, 60))
+    weegee.draw(offset)
     pygame.display.flip()
