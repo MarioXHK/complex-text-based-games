@@ -1,5 +1,5 @@
 import pygame
-
+from math import sqrt
 #set up pygame stuff
 pygame.init()  
 pygame.display.set_caption("Pizzalike Platformer")  # sets the window title
@@ -8,11 +8,14 @@ screen.fill((0,0,0))
 clock = pygame.time.Clock() #set up clock
 #Setting up the classes
 class player:#THE PLAYER OF THE GAME
-    def __init__(self, startx, starty, startvx, startvy):
+    def __init__(self, startx, starty, name):
+        self.name = name
         self.x = startx
         self.y = starty
-        self.vx = startvx
-        self.vy = startvy
+        self.xsize = 40
+        self.ysize = 60
+        self.vx = 0
+        self.vy = 0
         self.controlling = False
         self.defslip = 0.5
         self.slip = 0.5
@@ -21,6 +24,7 @@ class player:#THE PLAYER OF THE GAME
         self.onGround = True
         self.onRecord = [True,False]
         self.crouch = False
+        self.steps = 5#How many loops to preform collision checks
     def controlhorz(self,dirr,run,sneak):
         self.controlling = True
         self.crouch = sneak
@@ -51,21 +55,18 @@ class player:#THE PLAYER OF THE GAME
             self.vy = -10
     def collision(self,theMap, kind):
         #Trust me this takes up a lot less space
-        osimp = ((int((self.x)/40),int((self.y)/40),int((self.x+40)/40),int((self.y+60)/40),int((self.y+20)/40)),(int((self.x+2)/40),int((self.y+2)/40),int((self.x+38)/40),int((self.y+58)/40)))
-        '''
-        Complicated tuple, Explanation: X and Y then First: Oversimplfied then otherway, Otherway meaning the thing plus the player's size.
-        Last part of the tuple is y divided by size 2. First tuple is the real numbers while the second is imperciseness to make physics correct ig
-        '''
-        oversimpYall = int((self.y+20)/40)#Oversimplified Y divided by ysize
+        osimp = ((int((self.x)/40),int((self.y)/40),int((self.x+self.xsize)/40),int((self.y+self.ysize)/40),int((self.x+(self.xsize/2))/40),int((self.y+(self.ysize/2))/40)),(int((self.x+2)/40),int((self.y+2)/40),int((self.x+(self.xsize-2))/40),int((self.y+(self.ysize-2))/40)))
+        #Complicated tuple, Explanation: X and Y then First: Oversimplfied then otherway, Otherway meaning the thing plus the player's size.
+        #Last part of the tuple is y divided by size 2. First tuple is the real numbers while the second is imperciseness to make physics correct ig
         try:
-            if (theMap[osimp[0][3]][osimp[1][0]][1] or theMap[osimp[0][3]][osimp[1][2]][1]) and self.vy > -0.1 and (self.y-60) % 40 <= 5 and kind == 0:
-                return True
-            if (theMap[osimp[0][1]][osimp[1][0]][2] or theMap[osimp[0][1]][osimp[1][2]][2]) and self.vy < 0.1 and kind == 1:
-                return True
-            if (theMap[osimp[1][1]][osimp[0][0]][4] or theMap[osimp[1][3]][osimp[0][0]][4] or theMap[oversimpYall][osimp[0][0]][3]) and self.vx < 0.1 and kind == 2:
-                return True
-            if (theMap[osimp[1][1]][osimp[0][2]][3] or theMap[osimp[1][3]][osimp[0][2]][3] or theMap[oversimpYall][osimp[0][2]][4]) and self.vx > -0.1 and kind == 3:
-                return True
+            if (theMap[osimp[0][3]][osimp[1][0]][1] or theMap[osimp[0][3]][osimp[1][2]][1] or theMap[osimp[0][3]][osimp[0][4]][1]) and self.vy > -0.1 and (self.y-self.ysize) % 40 <= 5 and kind == 0:
+                return True#If the player is below a block
+            if (theMap[osimp[0][1]][osimp[1][0]][2] or theMap[osimp[0][1]][osimp[1][2]][2] or theMap[osimp[0][1]][osimp[0][4]][2]) and self.vy < 0.1 and kind == 1:
+                return True#If the player is above a block
+            if (theMap[osimp[1][1]][osimp[0][0]][4] or theMap[osimp[1][3]][osimp[0][0]][4] or theMap[osimp[0][5]][osimp[0][0]][4]) and self.vx < 0.1 and kind == 2:
+                return True#If the player is to the right of a block
+            if (theMap[osimp[1][1]][osimp[0][2]][3] or theMap[osimp[1][3]][osimp[0][2]][3] or theMap[osimp[0][5]][osimp[0][2]][3]) and self.vx > -0.1 and kind == 3:
+                return True#If the player is to the left of a block
         except:#If an error occures (most likely out of bounds) It'll teleport the player back the start
             print("OUT OF BOUNDS! Re-positioning!")
             self.x = 400
@@ -90,12 +91,13 @@ class player:#THE PLAYER OF THE GAME
             #if the player let go of the jump early
             if self.fasterDown:
                 self.vy += 0.6
-        for i in range(10):
+        
+        for i in range(self.steps):#Does physics 10 times to be sure to not phase through anything.
         #Gravity stuff
             if self.collision(theMap,0):
                 self.onGround = True
                 self.vy = 0
-                self.y = (int((self.y+60)/40))*40-60
+                self.y = (int((self.y+self.ysize)/40))*40-self.ysize
             
             if self.collision(theMap,1):#Ceiling collision
                 self.vy = 0
@@ -105,24 +107,27 @@ class player:#THE PLAYER OF THE GAME
                 self.x = (int((self.x+40)/40))*40
                 self.vx = 0
             if self.collision(theMap,3):
-                self.x = (int((self.x+40)/40))*40-40
+                self.x = (int((self.x+self.xsize)/40))*40-self.xsize
                 self.vx = 0
             
             #Terminal Velocity
             if self.vy > 10:
                 self.vy = 10
             self.fasterDown = False
-            self.x += self.vx/10
-            self.y += self.vy/10
-            #Corrections
-            
+            self.x += self.vx/self.steps
+            self.y += self.vy/self.steps
             #Makes the movement less controllable while in air
             if self.onGround:
                 self.slip = self.defslip
             else:
                 self.slip = self.defslip/3
-    def draw(self, off):
-        pygame.draw.rect(screen, (100, 200, 100), (self.x-off[0], self.y-off[1], 40, 60))
+    def draw(self, off, zoom = 1):
+        color = (100, 100, 100)
+        if self.name == "w":
+            color = (100, 200, 100)
+        elif self.name == "m":
+            color = (200, 100, 100)
+        pygame.draw.rect(screen, color, (self.x*zoom-off[0], self.y*zoom-off[1], self.xsize*zoom, self.ysize*zoom))
 
 
 
@@ -173,11 +178,11 @@ def coolgen(mape):
                     mape[i][j][4]=(True)
     return mape
 #SETTING UP THE VARIABLES!
-keys = [False,False,False,False,False]#For input
+keys = [1,[False,False,False,False,False],[False,False,False,False,False]]#For input
 gaming = True#Alright, we're gaming
 debug = False
 offset = [0,0]
-
+dozooming = True #if true, zooming will be enabled
 #MAP: 1 is grass, 2 is brick
 map = [[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
        [1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1],
@@ -206,8 +211,10 @@ map = [[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
        [1,1,0,0,0,0,0,0,1,0,2,2,1,2,0,0,0,0,0,0,0,0,0,0,2,2,0,0,0,2,0,0,2,2,2,2,2,2,2,2,0,1],
        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]]
 startpoint = scanspawn(map)
-weegee = player(400,400,0,0)#THe player you play as
-
+players = [player(400,400,"w"),player(500,400,"m")]#THe player you play as
+p1dom = 1 #How much player 1 has dominance over scrolling
+zoom = 1
+maxdis = 600 #Max distance a player is allowed to be away from the other before they get pulled
 map = coolgen(map)
 
 while gaming:
@@ -218,58 +225,107 @@ while gaming:
         #inpoot-------------------------------------------------------
         
         if event.type == pygame.KEYDOWN: #keyboard input
+            if event.key == pygame.K_1:
+                keys[0]=1
+            elif event.key == pygame.K_2:
+                keys[0]=2
             if event.key == pygame.K_LEFT:
-                keys[0]=True
+                keys[keys[0]][0]=True
             elif event.key == pygame.K_RIGHT:
-                keys[1]=True
+                keys[keys[0]][1]=True
             if event.key == pygame.K_UP:
-                keys[2]=True
+                keys[keys[0]][2]=True
             if event.key == pygame.K_DOWN:
-                keys[3]=True
+                keys[keys[0]][3]=True
             elif event.key == pygame.K_LSHIFT:
-                keys[4]=True
+                keys[keys[0]][4]=True
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
-                keys[0]=False
+                keys[keys[0]][0]=False
             elif event.key == pygame.K_RIGHT:
-                keys[1]=False
+                keys[keys[0]][1]=False
             if event.key == pygame.K_UP:
-                keys[2]=False
+                keys[keys[0]][2]=False
             if event.key == pygame.K_DOWN:
-                keys[3]=False
+                keys[keys[0]][3]=False
             elif event.key == pygame.K_LSHIFT:
-                keys[4]=False
+                keys[keys[0]][4]=False
     clock.tick(60)
     
     #PLAYER INPUT!!!
-    weegee.controlling = False#For when the player isn't controlling
-    if keys[2]:
-        weegee.jump()
-    if (not keys[2]) and weegee.vy < -0.5:
-        weegee.fasterDown = True
-    if keys[0]:
-        weegee.controlhorz(False,keys[4],keys[3])
-    elif keys[1]:
-        weegee.controlhorz(True,keys[4],keys[3])
+    for i in range(len(players)):
+        players[i].controlling = False#For when the player isn't controlling
+        if keys[i+1][2]:
+            players[i].jump()
+        if (not keys[i+1][2]) and players[i].vy < -0.5:
+            players[i].fasterDown = True
+        if keys[i+1][0]:
+            players[i].controlhorz(False,keys[i+1][4],keys[i+1][3])
+        elif keys[i+1][1]:
+            players[i].controlhorz(True,keys[i+1][4],keys[i+1][3])
     
     #THE LAWS OF PHYSICS AKA HOW STUFF MOVES!
-    weegee.move(map)
-    #Scrolling?? Hopefully
-    if weegee.x > 400 and weegee.x < len(map[0])*40-400:
-        offset[0] = weegee.x - 400
-    if weegee.y > 400 and weegee.y < len(map)*40-400:
-        offset[1] = weegee.y - 400
+        players[i].move(map)
+    #4 later
+    pdisx = []
+    pdisy = []
+    if len(players) > 1:
+        for i in range(len(players)-1):
+            pdisx.append(int(abs(players[0].x-players[i+1].x)))
+            pdisy.append(int(abs(players[0].y-players[i+1].y)))
+    #Scrolling?? Definetly
+    average = [0,0]
+    for i in range(len(players)):
+        average[0] += players[i].x
+        average[1] += players[i].y
+    for i in range(p1dom):
+        average[0] += players[0].x
+        average[1] += players[0].y
+    average[0] = average[0]/(len(players)+p1dom)
+    average[1] = average[1]/(len(players)+p1dom)
+    if average[0] > 400 and average[0] < len(map[0])*40-(400):
+        offset[0] = (average[0] - 400)*zoom
+    if average[1] > 400 and average[1] < len(map)*40-(400):
+        offset[1] = (average[1] - 400)*zoom
+    #ZOOMING?!?!?!?!? Is that even possible?
+    
+    
+    if dozooming and len(players) > 1:
+        for i in range(len(players)-1):
+            if pdisx[i] > 400 or pdisy[i] > 400:
+                if pdisx[i] > pdisy[i]:
+                    zoom = 1.5-pdisx[i]/800
+                else:
+                    zoom = 1.5-pdisy[i]/800
+                if zoom < 0.7:
+                    zoom = 0.7
+            else:
+                zoom = 1
+    else:
+        zoom = 1
+    print(pdisx,pdisy)
+    #Pulls the player to the first player instantly)
+    if dozooming:
+        maxdis = 800
+    else:
+        maxdis = 600
+    for d in range(len(players)):
+        if pdisx[d-1] > maxdis or pdisy[d-1] > maxdis:
+            players[d].x = players[0].x
+            players[d].y = players[0].y
+    
     #The part where things get put on the screen, aka --==XXXTHE RENDER SECTIONXXX==--
+    
     screen.fill((60,0,150)) #wipe screen so it doesn't smear
     
     for i in range (len(map)):
         for j in range(len(map[0])):
             if map[i][j][0]==1:
-                pygame.draw.rect(screen, (120, 67, 10), (40*j-offset[0],40*i-offset[1], 40, 40))
+                pygame.draw.rect(screen, (120, 67, 10), ((40*zoom)*j-offset[0],(40*zoom)*i-offset[1], 40*zoom, 40*zoom))
             if map[i][j][0]==2:
-                pygame.draw.rect(screen, (181, 58, 31), (40*j-offset[0],40*i-offset[1], 40, 40))
+                pygame.draw.rect(screen, (181, 58, 31), ((40*zoom)*j-offset[0],(40*zoom)*i-offset[1], 40*zoom, 40*zoom))
             if map[i][j][0]==3:
-                pygame.draw.rect(screen, (255, 255, 255), (40*j-offset[0],40*i-offset[1], 40, 5))
+                pygame.draw.rect(screen, (255, 255, 255), ((40*zoom)*j-offset[0],(40*zoom)*i-offset[1], 40*zoom, 5*zoom))
             if debug:
                 if map[i][j][1]:
                     pygame.draw.rect(screen, (255, 0, 0), (40*j-offset[0],40*i-offset[1], 40, 5))
@@ -281,5 +337,6 @@ while gaming:
                     pygame.draw.rect(screen, (255, 0, 0), ((40*j-offset[0])+35,(40*i-offset[1]), 5, 40))
     
     
-    weegee.draw(offset)
+    for k in range(len(players)):
+        players[k].draw(offset,zoom)
     pygame.display.flip()
