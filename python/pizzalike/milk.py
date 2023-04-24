@@ -52,7 +52,7 @@ class player:#THE PLAYER OF THE GAME
                     self.vx = 0-self.maxrun
     def jump(self):
         if self.onGround:
-            self.vy = -15
+            self.vy = -10
     def collision(self,theMap, kind):
         #Trust me this takes up a lot less space
         osimp = ((int((self.x)/40),int((self.y)/40),int((self.x+self.xsize)/40),int((self.y+self.ysize)/40),int((self.x+(self.xsize/2))/40),int((self.y+(self.ysize/2))/40)),(int((self.x+2)/40),int((self.y+2)/40),int((self.x+(self.xsize-2))/40),int((self.y+(self.ysize-2))/40)))
@@ -184,7 +184,7 @@ def coolgen(mape):
 #SETTING UP THE VARIABLES!
 keys = [1,[False,False,False,False,False]]#For input
 gaming = True#Alright, we're gaming
-debug = False
+debug = True
 offset = [0,0]
 dozooming = True #if true, zooming will be enabled
 #MAP: 1 is grass, 2 is brick
@@ -230,8 +230,12 @@ map = [[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]]
+
+ground = pygame.image.load('ground.png')
+
+
 startpoint = scanspawn(map)
-players = [player(400,400,"w")]#THe player you play as
+players = [player(400,400,"w"),player(400,400,"m")]#THe player you play as
 p1dom = 1 #How much player 1 has dominance over scrolling
 zoom = 1
 zoomy = 1
@@ -347,24 +351,26 @@ while gaming:
     zoomy = smooth(zoomy,zoom,"line",False, -0.05)
     
     screen.fill((60,0,150)) #wipe screen so it doesn't smear
-    
+    ground = pygame.transform.scale(ground, (200*zoom,200*zoom))
     for i in range (len(map)):
         for j in range(len(map[0])):
+            myx = (40*zoom)*j-offset[0]
+            myy = (40*zoom)*i-offset[1]
             if map[i][j][0]==1:
-                pygame.draw.rect(screen, (120, 67, 10), ((40*zoom)*j-offset[0],(40*zoom)*i-offset[1], 40*zoom, 40*zoom))
+                screen.blit(ground, (myx, myy), (0, 0, 40*zoom, 40*zoom)) 
             if map[i][j][0]==2:
-                pygame.draw.rect(screen, (181, 58, 31), ((40*zoom)*j-offset[0],(40*zoom)*i-offset[1], 40*zoom, 40*zoom))
+                pygame.draw.rect(screen, (181, 58, 31), (myx,myy, 40*zoom, 40*zoom))
             if map[i][j][0]==3:
-                pygame.draw.rect(screen, (255, 255, 255), ((40*zoom)*j-offset[0],(40*zoom)*i-offset[1], 40*zoom, 5*zoom))
+                pygame.draw.rect(screen, (255, 255, 255), (myx,myy, 40*zoom, 5*zoom))
             if debug:
                 if map[i][j][1]:
-                    pygame.draw.rect(screen, (255, 0, 0), (40*j-offset[0],40*i-offset[1], 40, 5))
+                    pygame.draw.rect(screen, (255, 0, 0), (myx,myy, 40*zoom, 5*zoom))
                 if map[i][j][2]:
-                    pygame.draw.rect(screen, (255, 0, 0), (40*j-offset[0],(40*i-offset[1])+35, 40, 5))
+                    pygame.draw.rect(screen, (255, 0, 0), (myx,myy+35*zoom, 40*zoom, 5*zoom))
                 if map[i][j][3]:
-                    pygame.draw.rect(screen, (255, 0, 0), (40*j-offset[0],40*i-offset[1], 5, 40))
+                    pygame.draw.rect(screen, (255, 0, 0), (myx,myy, 5*zoom, 40*zoom))
                 if map[i][j][4]:
-                    pygame.draw.rect(screen, (255, 0, 0), ((40*j-offset[0])+35,(40*i-offset[1]), 5, 40))
+                    pygame.draw.rect(screen, (255, 0, 0), (myx+35*zoom,myy, 5*zoom, 40*zoom))
     
     
     for k in range(len(players)):
