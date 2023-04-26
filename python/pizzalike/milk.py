@@ -56,7 +56,7 @@ class player:#THE PLAYER OF THE GAME
     def controlhorz(self,dirr,run):
         self.controlling = True
         #Moves you in both directions
-        hardtoaccel = 15
+        hardtoaccel = 12
         #The speed in which speeding up becomes harder than slowing down
         if self.crouch:
             self.maxrun = 2
@@ -70,7 +70,7 @@ class player:#THE PLAYER OF THE GAME
                 if self.vx < hardtoaccel:
                     self.vx += self.slip
                 else:
-                    self.vx += self.slip/4
+                    self.vx += self.slip/5
             else:
                 self.vx -= self.slip/2
                 if self.vx > self.maxrun:
@@ -80,7 +80,7 @@ class player:#THE PLAYER OF THE GAME
                 if self.vx > 0-hardtoaccel:
                     self.vx -= self.slip
                 else:
-                    self.vx -= self.slip/4
+                    self.vx -= self.slip/5
             else:
                 self.vx += self.slip/2
                 if self.vx < 0-self.maxrun:
@@ -89,6 +89,8 @@ class player:#THE PLAYER OF THE GAME
         if self.onGround:
             self.vy = -10
     def duck(self, sneak):
+        if self.bump > 0:
+            return
         if sneak != self.crouch:
             if not self.crouch:
                 self.ysize = 40
@@ -119,7 +121,7 @@ class player:#THE PLAYER OF THE GAME
             self.y = 400
         return False
     def retick(self):
-        #Pre-render maths and some other scripts that update the player that don't involve moving
+        #Pre-render maths and some other scripts that update the player that don't involve moving (good for when the game is pawused)
         self.rx = self.x + self.ox
         self.ry = self.y + self.oy
         
@@ -175,8 +177,8 @@ class player:#THE PLAYER OF THE GAME
                 self.vx = 0
                     
             #Terminal Velocity
-            if self.vy > 10:
-                self.vy = 10
+            if self.vy > 15:
+                self.vy = 15
             self.fasterDown = False
             self.x += self.vx/self.steps
             self.y += self.vy/self.steps
@@ -231,8 +233,9 @@ def coolgen(mape):
         for j in range(len(mape[0])):
             for k in range(4):#Sets up the 4 things
                 mape[i][j].append(False)
+            mape[i][j].append([0,0])
             if mape[i][j][0] in nonsolid:#For when something isn't solid
-                if mape[i][j][0] == 3:
+                if mape[i][j][0] == 3:#special case scenario: platform
                     mape[i][j][1] = True
                 continue
             #Now for all the solid things
@@ -248,11 +251,33 @@ def coolgen(mape):
             if j < len(mape[0])-1:
                 if mape[i][j+1][0] in nonsolid:#checks if anything is to the right of it
                     mape[i][j][4]=(True)
+            if mape[i][j][3] and mape[i][j][4]:
+                mape[i][j][5][0] = 120
+            elif mape[i][j][3]:
+                mape[i][j][5][0] = 0
+            elif mape[i][j][4]:
+                mape[i][j][5][0] = 80
+            else:
+                mape[i][j][5][0] = 40
+            if mape[i][j][1]:
+                mape[i][j][5][1] = 0
+                if mape[i][j][2]:
+                    mape[i][j][5][0] += 160
+            elif mape[i][j][2]:
+                mape[i][j][5][1] = 80
+            else:
+                mape[i][j][5][1] = 40
+    for i in range(len(mape)):
+        for j in range(len(mape[0])):
+            if mape[i][j][0] in nonsolid:
+                continue
+            
+    
     return mape
 #SETTING UP THE VARIABLES!
-keys = [[False,False,False,False,False]]#For input
+keys = [[False,False,False,False,False,False]]#For input
 gaming = True#Alright, we're gaming
-debug = True
+debug = False
 offset = [0,0]
 dozooming = False #if true, zooming will be enabled
 #MAP: 1 is grass, 2 is brick
@@ -299,7 +324,8 @@ map = [[1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,
        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
        [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1]]
 
-
+ground = pygame.image.load('ground.png')
+ground = pygame.transform.scale(ground, (320,200))
 
 print(scanspawn(map,9))
 
@@ -310,7 +336,7 @@ zoomy = 1
 maxdis = 600 #Max distance a player is allowed to be away from the other before they get pulled
 map = coolgen(map)
 for o in range(len(players)-1):
-    keys.append([False,False,False,False,False])
+    keys.append(keys[0])
 
 while gaming:
     for event in pygame.event.get(): #2b- i mean event queue
@@ -328,8 +354,14 @@ while gaming:
                 keys[0][2]=True
             if event.key == pygame.K_DOWN:
                 keys[0][3]=True
-            elif event.key == pygame.K_LSHIFT:
+            if event.key == pygame.K_z:
                 keys[0][4]=True
+            if event.key == pygame.K_LSHIFT:
+                keys[0][5]=True
+            if event.key == pygame.K_x:
+                keys[0][6]=True
+            if event.key == pygame.K_SPACE:
+                debug=True
         elif event.type == pygame.KEYUP:
             if event.key == pygame.K_LEFT:
                 keys[0][0]=False
@@ -339,21 +371,27 @@ while gaming:
                 keys[0][2]=False
             if event.key == pygame.K_DOWN:
                 keys[0][3]=False
-            elif event.key == pygame.K_LSHIFT:
+            if event.key == pygame.K_z:
                 keys[0][4]=False
+            if event.key == pygame.K_LSHIFT:
+                keys[0][5]=False
+            if event.key == pygame.K_x:
+                keys[0][6]=False
+            if event.key == pygame.K_SPACE:
+                debug=False
     clock.tick(60)
     #PLAYER INPUT!!!
     for i in range(len(players)):
         players[i].controlling = False#For when the player isn't controlling
-        if keys[i][2]:
+        if keys[i][4]:
             players[i].jump()
-        if (not keys[i][2]) and players[i].vy < -0.5:
+        if (not keys[i][4]) and players[i].vy < -0.5:
             players[i].fasterDown = True
         players[i].duck(keys[i][3])
         if keys[i][0]:
-            players[i].controlhorz(False,keys[i][4])
+            players[i].controlhorz(False,keys[i][5])
         elif keys[i][1]:
-            players[i].controlhorz(True,keys[i][4])
+            players[i].controlhorz(True,keys[i][5])
     
     #THE LAWS OF PHYSICS AKA HOW STUFF MOVES!
         players[i].move(map)
@@ -423,11 +461,16 @@ while gaming:
             myx = (40*zoom)*j-offset[0]
             myy = (40*zoom)*i-offset[1]
             if map[i][j][0]==1:
-                pygame.draw.rect(screen, (120, 67, 10), (myx,myy, 40*zoom, 40*zoom))
+                if dozooming:
+                    pygame.draw.rect(screen, (120, 67, 10), (myx,myy, 40*zoom, 40*zoom))
+                else:
+                    screen.blit(ground, (myx, myy), (map[i][j][5][0], map[i][j][5][1], 40, 40))
             if map[i][j][0]==2:
-                pygame.draw.rect(screen, (181, 58, 31), (myx,myy, 40*zoom, 40*zoom))
+                if dozooming:
+                    pygame.draw.rect(screen, (181, 58, 31), (myx,myy, 40*zoom, 40*zoom))
             if map[i][j][0]==3:
-                pygame.draw.rect(screen, (255, 255, 255), (myx,myy, 40*zoom, 5*zoom))
+                if dozooming:
+                    pygame.draw.rect(screen, (255, 255, 255), (myx,myy, 40*zoom, 5*zoom))
             if debug:
                 if map[i][j][1]:
                     pygame.draw.rect(screen, (255, 0, 0), (myx,myy, 40*zoom, 5*zoom))
