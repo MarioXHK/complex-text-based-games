@@ -6,6 +6,35 @@ pygame.display.set_caption("Pizzalike Platformer")  # sets the window title
 screen = pygame.display.set_mode((800, 800))  # creates game screen
 screen.fill((0,0,0))
 clock = pygame.time.Clock() #set up clock
+#Setting up collision function!
+def collision(x,y,h,v,vx,vy,kind,duck = False):
+    global map
+    #I swear I'll turn this into a function that everything can use
+    osimp = ((int((x)/40),int((y)/40),int((x+h)/40),int((y+v)/40),int((x+(h/2))/40),int((y+(h/2))/40)),(int((x+2)/40),int((y+2)/40),int((x+(h-2))/40),int((y+(v-2))/40)),(int((y-20)/40)))
+    #Complicated tuple, Explanation: X and Y then First: Oversimplfied then otherway, Otherway meaning the thing plus the player's size.
+    #Last part of the tuple is y divided by size 2. First tuple is the real numbers while the second is imperciseness to make physics correct ig
+    try:
+        if (map[osimp[0][3]][osimp[1][0]][1] or map[osimp[0][3]][osimp[1][2]][1] or map[osimp[0][3]][osimp[0][4]][1]) and vy > -0.1 and (y-v) % 40 <= 5 and kind == 0:
+            return True#If the checker is below a block
+        if (map[osimp[0][1]][osimp[1][0]][2] or map[osimp[0][1]][osimp[1][2]][2] or map[osimp[0][1]][osimp[0][4]][2]) and vy < 0.1 and kind == 1:
+            return True#If the checker is above a block
+        if (map[osimp[1][1]][osimp[0][0]][4] or map[osimp[1][3]][osimp[0][0]][4] or map[osimp[0][5]][osimp[0][0]][4]) and vx < 0.1 and kind == 2:
+            return True#If the checker is to the right of a block
+        if (map[osimp[1][1]][osimp[0][2]][3] or map[osimp[1][3]][osimp[0][2]][3] or map[osimp[0][5]][osimp[0][2]][3]) and vx > -0.1 and kind == 3:
+            return True#If the checker is to the left of a block
+        if (map[osimp[2]][osimp[1][0]][2] or map[osimp[2]][osimp[1][2]][2] or map[osimp[2]][osimp[0][4]][2]) and duck and kind == 4:
+            return True#If the checker is ducking
+        if kind == 5 and vy > -0.1 and (y-v) % 40 <= 5:
+            if map[osimp[0][3]][osimp[1][0]][1] and map[osimp[0][3]][osimp[1][2]][1] and map[osimp[0][3]][osimp[0][4]][1]:
+                return 2#If the checker is completely on a block
+            elif map[osimp[0][3]][osimp[1][0]][1] or map[osimp[0][3]][osimp[1][2]][1] or map[osimp[0][3]][osimp[0][4]][1]:
+                return 1#If the checker is on the edge of a block
+    except:
+        return False
+    return False
+    
+
+
 #Setting up the classes
 class player:#THE PLAYER OF THE GAME
     def __init__(self, startx, starty, name = "nul"):
@@ -49,7 +78,6 @@ class player:#THE PLAYER OF THE GAME
         #How fast can the player run's modifier
         
         self.onGround = True
-        self.onRecord = [False,False]
         self.crouch = False
         self.steps = 10
         #How many loops to preform collision checks
@@ -88,8 +116,8 @@ class player:#THE PLAYER OF THE GAME
     def jump(self):
         if self.onGround:
             self.vy = -10
-    def duck(self, sneak,theMap):
-        if self.bump > 0 or self.collision(theMap,4):
+    def duck(self, sneak):
+        if self.bump > 0 or collision(self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,4,self.crouch):
             return
         if sneak != self.crouch:
             if not self.crouch:
@@ -101,33 +129,12 @@ class player:#THE PLAYER OF THE GAME
                 self.y -= 20
                 self.oy += 20
         self.crouch = sneak
-    def collision(self,theMap, kind):
-        #I swear I'll turn this into a function that everything can use
-        osimp = ((int((self.x)/40),int((self.y)/40),int((self.x+self.xsize)/40),int((self.y+self.ysize)/40),int((self.x+(self.xsize/2))/40),int((self.y+(self.ysize/2))/40)),(int((self.x+2)/40),int((self.y+2)/40),int((self.x+(self.xsize-2))/40),int((self.y+(self.ysize-2))/40)),(int((self.y-20)/40)))
-        #Complicated tuple, Explanation: X and Y then First: Oversimplfied then otherway, Otherway meaning the thing plus the player's size.
-        #Last part of the tuple is y divided by size 2. First tuple is the real numbers while the second is imperciseness to make physics correct ig
-        try:
-            if (theMap[osimp[0][3]][osimp[1][0]][1] or theMap[osimp[0][3]][osimp[1][2]][1] or theMap[osimp[0][3]][osimp[0][4]][1]) and self.vy > -0.1 and (self.y-self.ysize) % 40 <= 5 and kind == 0:
-                return True#If the player is below a block
-            if (theMap[osimp[0][1]][osimp[1][0]][2] or theMap[osimp[0][1]][osimp[1][2]][2] or theMap[osimp[0][1]][osimp[0][4]][2]) and self.vy < 0.1 and kind == 1:
-                return True#If the player is above a block
-            if (theMap[osimp[1][1]][osimp[0][0]][4] or theMap[osimp[1][3]][osimp[0][0]][4] or theMap[osimp[0][5]][osimp[0][0]][4]) and self.vx < 0.1 and kind == 2:
-                return True#If the player is to the right of a block
-            if (theMap[osimp[1][1]][osimp[0][2]][3] or theMap[osimp[1][3]][osimp[0][2]][3] or theMap[osimp[0][5]][osimp[0][2]][3]) and self.vx > -0.1 and kind == 3:
-                return True#If the player is to the left of a block
-            if (theMap[osimp[2]][osimp[1][0]][2] or theMap[osimp[2]][osimp[1][2]][2] or theMap[osimp[2]][osimp[0][4]][2]) and self.crouch and kind == 4:
-                return True#If the player is ducking
-        except:#If an error occures (most likely out of bounds) It'll teleport the player back the start
-            print("OUT OF BOUNDS! Re-positioning!")
-            self.x = 400
-            self.y = 400
-        return False
     def retick(self):
         #Pre-render maths and some other scripts that update the player that don't involve moving (good for when the game is pawused)
         self.rx = self.x + self.ox
         self.ry = self.y + self.oy
         
-    def move(self,theMap):
+    def move(self):
         if self.bump > 0:
             self.bump -= 1
             return
@@ -150,7 +157,7 @@ class player:#THE PLAYER OF THE GAME
         
         
         #Collision--------------------------------
-        if not self.collision(theMap,0):
+        if not collision(self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,0):
             self.vy += .3
             #if the player let go of the jump early
             if self.fasterDown:
@@ -158,21 +165,21 @@ class player:#THE PLAYER OF THE GAME
         dodabump = [False, self.vx]
         for i in range(self.steps):#Does physics 10 times to be sure to not phase through anything.
         #Gravity stuff
-            if self.collision(theMap,0):
+            if collision(self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,0):#THE FLOOR
                 self.onGround = True
                 self.vy = 0
                 self.y = (int((self.y+self.ysize)/40))*40-self.ysize
             
-            if self.collision(theMap,1):#Ceiling collision
+            if collision(self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,1):#Ceiling collision
                 self.vy = 0
                 self.y = (int((self.y)/40))*40+40
                 
-            if self.collision(theMap,2):#Wall collision (2 and 3)
+            if collision(self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,2):#Wall left
                 self.x = (int((self.x+40)/40))*40
                 if self.vx < -15:
                     dodabump[0] = True
                 self.vx = 0
-            if self.collision(theMap,3):
+            if collision(self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,3):#Wall right
                 self.x = (int((self.x+self.xsize)/40))*40-self.xsize
                 if self.vx > 15:
                     dodabump[0] = True
@@ -201,9 +208,76 @@ class player:#THE PLAYER OF THE GAME
             color = (200, 100, 100)
         pygame.draw.rect(screen, color, (self.x*zoom-off[0], self.y*zoom-off[1], self.xsize*zoom, self.ysize*zoom))
 
-
-
-
+#Entity!
+class entity:
+    def __init__(self, startx, starty, name = "nul"):
+        self.type = name
+        self.x = startx
+        #Entity's X position
+        self.y = starty
+        #Entity's Y position
+        self.vx = 0
+        #Player's Horizontal Velocity
+        self.vy = 0
+        #Player's Vertical Velocity
+        self.xsize = 40
+        #Entity's Horizontal Size
+        self.ysize = 40
+        #Entity's Vertical Size
+        self.held = False
+        #If the entity is being held
+        
+        self.slip = 0.5
+        #How slippery the ground is
+        self.defslip = self.slip
+        #The default value for self.slip, cannot be changed
+        
+        self.onGround = True
+        self.steps = 5
+        #How many loops to preform collision checks
+        
+        if name == "cheese":
+            self.xsize = 60
+            self.ysize = 40
+            self.vx = 3
+    def move(self):
+        if self.held:
+            return
+        self.onGround = False
+        for i in range(self.steps):#Does physics 10 times to be sure to not phase through anything.
+        #Gravity stuff
+            if collision(self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,0):#THE FLOOR
+                self.onGround = True
+                self.vy = 0
+                self.y = (int((self.y+self.ysize)/40))*40-self.ysize
+            
+            if collision(self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,1):#Ceiling collision
+                self.vy = 0
+                self.y = (int((self.y)/40))*40+40
+                
+            if collision(self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,2):#Wall left
+                self.x = (int((self.x+40)/40))*40
+                self.vx = 0-self.vx
+            if collision(self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,3):#Wall right
+                self.x = (int((self.x+self.xsize)/40))*40-self.xsize
+                self.vx = 0-self.vx
+                    
+            self.fasterDown = False
+            self.x += self.vx/self.steps
+            self.y += self.vy/self.steps
+            #Makes the movement less controllable while in air
+            if self.onGround:
+                self.slip = self.defslip
+            else:
+                self.slip = self.defslip/3
+    def draw(self, off, zoom = 1):
+        color = (100, 100, 100)
+        if self.name == "cheese":
+            color = (200, 200, 100)
+        elif self.name == "slime":
+            color = (50, 200, 100)
+        pygame.draw.rect(screen, color, (self.x*zoom-off[0], self.y*zoom-off[1], self.xsize*zoom, self.ysize*zoom))
+#Some fun ctions
 
 #Scans the map for points of interest (searchfor)
 
@@ -449,14 +523,14 @@ while gaming:
             players[i].jump()
         if (not keys[i][4]) and players[i].vy < -0.5:
             players[i].fasterDown = True
-        players[i].duck(keys[i][3],map)
+        players[i].duck(keys[i][3])
         if keys[i][0]:
             players[i].controlhorz(False,keys[i][5])
         elif keys[i][1]:
             players[i].controlhorz(True,keys[i][5])
     
     #THE LAWS OF PHYSICS AKA HOW STUFF MOVES!
-        players[i].move(map)
+        players[i].move()
         players[i].retick()
     #4 later
     pdisx = []
