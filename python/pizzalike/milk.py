@@ -61,6 +61,7 @@ class player:#THE PLAYER OF THE GAME
         
         self.bump = 0
         #Cancel moving timer
+        self.punchcd = 0
         
         self.controlling = False
         #If the player is being controlled
@@ -69,20 +70,21 @@ class player:#THE PLAYER OF THE GAME
         #How slippery the ground is
         self.defslip = self.slip
         #The default value for self.slip, cannot be changed
-        
+        self.lastDone = False#The last movement done
         self.fasterDown = False
         self.maxrun = 4
         #How fast can the player run
         
-        self.vmod = 4
+        self.vmod = 1
         #How fast can the player run's modifier
-        
+        self.wheeled = True
         self.onGround = True
         self.crouch = False
         self.steps = 10
         #How many loops to preform collision checks
     def controlhorz(self,dirr,run):
         self.controlling = True
+        self.lastDone = dirr
         #Moves you in both directions
         hardtoaccel = 12
         #The speed in which speeding up becomes harder than slowing down
@@ -129,12 +131,37 @@ class player:#THE PLAYER OF THE GAME
                 self.y -= 20
                 self.oy += 20
         self.crouch = sneak
+    def punch(self,goinup,a,o):
+        prex = self.vx
+        if self.punchcd == 0:
+            self.vy = 0
+            self.punchcd = 60
+            if abs(self.vx) > 5 and abs(self.vx) < 8:
+                if self.lastDone:
+                    self.vx = 10
+                else:
+                    self.vx = -10
+            else:
+                self.vx *= 1.2
+            
+            if goinup and self.wheeled and not self.crouch:
+                self.wheeled = False
+                self.vx *= 1.5
+                self.vy = -10
+                if not (a or o):#If you just want to dash up
+                    self.vx = prex
+                    self.vy = -15
     def retick(self):
         #Pre-render maths and some other scripts that update the player that don't involve moving (good for when the game is pawused)
         self.rx = self.x + self.ox
         self.ry = self.y + self.oy
         
     def move(self):
+        frik = 2
+        if self.punchcd > 0:
+            self.punchcd -= 1
+            if self.crouch:
+                frik = 10
         if self.bump > 0:
             self.bump -= 1
             return
@@ -145,11 +172,11 @@ class player:#THE PLAYER OF THE GAME
         
         if not self.controlling:#If you're not doing anything you'll be slown down
             if self.vx > 0:
-                self.vx -= self.slip/2
+                self.vx -= self.slip/frik
                 if self.vx < 0.1:
                     self.vx = 0
             elif self.vx < 0:
-                self.vx += self.slip/2
+                self.vx += self.slip/frik
                 if self.vx > -0.1:
                     self.vx = 0
         
@@ -169,7 +196,9 @@ class player:#THE PLAYER OF THE GAME
                 self.onGround = True
                 self.vy = 0
                 self.y = (int((self.y+self.ysize)/40))*40-self.ysize
-            
+                if not self.wheeled:
+                    self.wheeled = True
+                    self.vx /= 2
             if collision(self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,1):#Ceiling collision
                 self.vy = 0
                 self.y = (int((self.y)/40))*40+40
@@ -233,6 +262,7 @@ class entity:
         #The default value for self.slip, cannot be changed
         
         self.onGround = True
+        self.wheeled = True
         self.steps = 5
         #How many loops to preform collision checks
         
@@ -250,7 +280,9 @@ class entity:
                 self.onGround = True
                 self.vy = 0
                 self.y = (int((self.y+self.ysize)/40))*40-self.ysize
-            
+                if not self.wheeled:
+                    self.bump = 10
+                    self.wheeled = True
             if collision(self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,1):#Ceiling collision
                 self.vy = 0
                 self.y = (int((self.y)/40))*40+40
@@ -528,7 +560,8 @@ while gaming:
             players[i].controlhorz(False,keys[i][5])
         elif keys[i][1]:
             players[i].controlhorz(True,keys[i][5])
-    
+        if keys[i][6]:
+            players[i].punch(keys[i][2],keys[i][0],keys[i][1])
     #THE LAWS OF PHYSICS AKA HOW STUFF MOVES!
         players[i].move()
         players[i].retick()
