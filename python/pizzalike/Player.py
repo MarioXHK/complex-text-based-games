@@ -43,6 +43,7 @@ class player:#THE PLAYER OF THE GAME
         self.maxrun = 4
         #How fast can the player run
         self.MID = [[[]]]
+        self.idc = 2#How much the player's max speed can really do
         self.vmod = 1
         #How fast can the player run's modifier
         self.wheeled = True
@@ -72,9 +73,7 @@ class player:#THE PLAYER OF THE GAME
                 else:
                     self.vx += self.slip/5
             else:
-                self.vx -= self.slip/2
-                if self.vx > self.maxrun:
-                    self.vx += self.slip/2
+                self.vx -= self.slip/self.idc
         else:
             if self.vx >= 0-self.maxrun:
                 if self.vx > 0-hardtoaccel:
@@ -82,9 +81,7 @@ class player:#THE PLAYER OF THE GAME
                 else:
                     self.vx -= self.slip/5
             else:
-                self.vx += self.slip/2
-                if self.vx < 0-self.maxrun:
-                    self.vx -= self.slip/2
+                self.vx += self.slip/self.idc
     def jump(self):
         if self.onGround:
             self.vy = -10
@@ -123,7 +120,7 @@ class player:#THE PLAYER OF THE GAME
                 if not (a or o):#If you just want to dash up
                     self.vx = prex
                     self.vy = -9
-            elif goingdown and not goinup:
+            elif goingdown and not (goinup or self.onGround):
                 self.groundpound = True
                 self.vx *= 1.2
                 self.vy = 12
@@ -138,15 +135,16 @@ class player:#THE PLAYER OF THE GAME
     def move(self):
         if self.onGround:
             self.touchedGround = True
-            self.groundpound = False
-        frik = 2
+            if not self.crouch:
+                self.groundpound = False
+        self.idc = 2
         
         if self.punchcd > 0:
             self.punchcd -= 1
-            if self.crouch and self.touchedGround:
-                frik = 10
         if self.punchcd < 30 and not self.groundpound:
             self.pound = False
+        elif self.groundpound:
+            self.idc = 100
         if self.bump > 0:
             self.bump -= 1
             return
@@ -157,11 +155,11 @@ class player:#THE PLAYER OF THE GAME
         
         if not self.controlling:#If you're not doing anything you'll be slown down
             if self.vx > 0:
-                self.vx -= self.slip/frik
+                self.vx -= self.slip/self.idc
                 if self.vx < 0.1:
                     self.vx = 0
             elif self.vx < 0:
-                self.vx += self.slip/frik
+                self.vx += self.slip/self.idc
                 if self.vx > -0.1:
                     self.vx = 0
         

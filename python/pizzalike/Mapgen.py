@@ -86,22 +86,29 @@ def coolgen(mape):
             for k in range(4):#Sets up the 4 things
                 mape[i][j].append(False)
             mape[i][j].append([0,0])
-            if mape[i][j][0] in nonsolid:#For when something isn't solid
-                if mape[i][j][0] == 3:#special case scenario: platform
+            if solidcheck(mape[i][j][0], True):#For when something isn't solid
+                if mape[i][j][0] in {3,4}:#special case scenario: platform
                     mape[i][j][1] = True
+                    mape[i][j][5] = [8,4]
+                    if j > 0:
+                        if mape[i][j-1][0] == 0:
+                            mape[i][j][5][0] -= 1
+                    if j < len(mape[0])-1:
+                        if mape[i][j+1][0] == 0:
+                            mape[i][j][5][0] += 1
                 continue
             #Now for all the solid things
             if i > 0:
-                if mape[i-1][j][0] in nonsolid:#checks if anything is above it
+                if solidcheck(mape[i-1][j][0], True):#checks if anything is above it
                     mape[i][j][1]=(True)
             if i < len(mape)-1:
-                if mape[i+1][j][0] in nonsolid:#checks if anything is below it
+                if solidcheck(mape[i+1][j][0], True):#checks if anything is below it
                     mape[i][j][2]=(True)
             if j > 0:
-                if mape[i][j-1][0] in nonsolid:#checks if anything is to the left of it
+                if solidcheck(mape[i][j-1][0], True):#checks if anything is to the left of it
                     mape[i][j][3]=(True)
             if j < len(mape[0])-1:
-                if mape[i][j+1][0] in nonsolid:#checks if anything is to the right of it
+                if solidcheck(mape[i][j+1][0], True):#checks if anything is to the right of it
                     mape[i][j][4]=(True)
             if mape[i][j][3] and mape[i][j][4]:
                 mape[i][j][5][0] = 3
@@ -119,9 +126,10 @@ def coolgen(mape):
                 mape[i][j][5][1] = 2
             else:
                 mape[i][j][5][1] = 1
+                
     for i in range(len(mape)):
         for j in range(len(mape[0])):
-            if mape[i][j][0] in nonsolid:
+            if solidcheck(mape[i][j][0], True):
                 continue
             mape[i][j][5] = cornerchecker(mape,mape[i][j][5],[i,j])
     
