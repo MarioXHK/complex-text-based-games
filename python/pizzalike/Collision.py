@@ -1,7 +1,7 @@
 import Maps
 class thing:
     #Setting up collision function!
-    def collision(MAP,x,y,h,v,vx,vy,kind,duck = False):
+    def mapcollision(MAP,x,y,h,v,vx,vy,kind,duck = False):
         osimp = ((int((x)/40),int((y)/40),int((x+h)/40),int((y+v)/40),int((x+(h/2))/40),int((y+(h/2))/40)),(int((x+2)/40),int((y+2)/40),int((x+(h-2))/40),int((y+(v-2))/40)),(int((y-20)/40)))
         #Complicated tuple, Explanation: X and Y then First: Oversimplfied then otherway, Otherway meaning the thing plus the player's size.
         #Last part of the tuple is y divided by size 2. First tuple is the real numbers while the second is imperciseness to make physics correct ig
@@ -24,3 +24,7 @@ class thing:
         except:
             return False
         return False
+    def objcollision(obj1,obj2,kind):
+        #It takes 2 object's x, y, h, and v values and turns them into a list in that order, obj1 being the object trying to collide
+        if obj1[0] in range(obj2[0],(obj2[0]+obj2[2])):
+            print("hi")

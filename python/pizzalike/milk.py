@@ -39,19 +39,23 @@ dozooming = False #if true, zooming will be enabled
 
 ground = pygame.image.load('ground.png')
 ground = pygame.transform.scale(ground, (400,400))
-players = [player(320,1380,"w")]#THe player you play as
+players = [player(640,1440,"w")]#THe player you play as
 p1dom = 1 #How much player 1 has dominance over scrolling
 zoom = 1
 zoomy = 1
 maxdis = 600 #Max distance a player is allowed to be away from the other before they get pulled
 mapID = 0
-map = Maps.getmap(mapID)
+map = Maps.getmap(mapID, False)
 print(Mapgen.scanspawn(Maps.getmap(mapID),9))
-enemies = []
+
+enemies = [entity(760, 1300,"cheese"),entity(560, 1300,"slime"),entity(720, 1080,"cherry")]
+
 for o in range(len(players)-1):
     keys.append(keys[0])
 for i in range(len(players)):
     players[i].getmap(map)
+for i in range(len(enemies)):
+    enemies[i].getmap(map)
 while gaming:
     for event in pygame.event.get(): #2b- i mean event queue
         if event.type == pygame.QUIT:
@@ -111,6 +115,9 @@ while gaming:
     #THE LAWS OF PHYSICS AKA HOW STUFF MOVES!
         players[i].move()
         players[i].retick()
+    for i in range(len(enemies)):
+        enemies[i].move()
+    
     #4 later
     pdisx = []
     pdisy = []
@@ -203,4 +210,6 @@ while gaming:
     
     for k in range(len(players)):
         players[k].draw(screen,offset,zoom)
+    for i in range(len(enemies)):
+        enemies[i].draw(screen,offset,zoom)
     pygame.display.flip()

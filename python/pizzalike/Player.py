@@ -43,12 +43,21 @@ class player:#THE PLAYER OF THE GAME
         self.maxrun = 4
         #How fast can the player run
         self.MID = [[[]]]
-        self.idc = 2#How much the player's max speed can really do
+        self.idc = 2
+        #How much the player's max speed can really do
+        
         self.vmod = 1
         #How fast can the player run's modifier
+        
         self.wheeled = True
+        #FOr when the player has his wheel
+        
         self.onGround = True
+        #If the player is on the ground
+        
         self.crouch = False
+        #If the player is crouched
+        
         self.steps = 10
         #How many loops to preform collision checks
     def getmap(self,idk):
@@ -84,9 +93,13 @@ class player:#THE PLAYER OF THE GAME
                 self.vx += self.slip/self.idc
     def jump(self):
         if self.onGround:
-            self.vy = -10
+            if self.groundpound:
+                self.vy = -12
+                self.vx /= 2
+            else:
+                self.vy = -10
     def duck(self, sneak):
-        if self.bump > 0 or thing.collision(self.MID,self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,4,self.crouch):
+        if self.bump > 0 or thing.mapcollision(self.MID,self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,4,self.crouch):
             return
         if sneak != self.crouch:
             if not self.crouch:
@@ -116,10 +129,10 @@ class player:#THE PLAYER OF THE GAME
             if goinup and self.wheeled and not self.crouch:
                 self.wheeled = False
                 self.vx *= 1.2
-                self.vy = -10
+                self.vy = -7
                 if not (a or o):#If you just want to dash up
                     self.vx = prex
-                    self.vy = -9
+                    self.vy -= 3
             elif goingdown and not (goinup or self.onGround):
                 self.groundpound = True
                 self.vx *= 1.2
@@ -141,14 +154,13 @@ class player:#THE PLAYER OF THE GAME
         
         if self.punchcd > 0:
             self.punchcd -= 1
-        if self.punchcd < 30 and not self.groundpound:
+        if (abs(self.vx) < 0.1 and self.punchcd < 30) or self.punchcd < 30:
             self.pound = False
-        elif self.groundpound:
+        if self.groundpound:
             self.idc = 100
         if self.bump > 0:
             self.bump -= 1
             return
-        
         self.onGround = False
         #Actually makes you move
         
@@ -163,12 +175,12 @@ class player:#THE PLAYER OF THE GAME
                 if self.vx > -0.1:
                     self.vx = 0
         
-        if self.vx > 12:
+        if abs(self.vx) > 12:
             self.pound = True
         
         
         #Collision--------------------------------
-        if not thing.collision(self.MID,self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,0):
+        if not thing.mapcollision(self.MID,self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,0):
             self.vy += .3
             #if the player let go of the jump early
             if self.fasterDown and not self.pound:
@@ -176,23 +188,29 @@ class player:#THE PLAYER OF THE GAME
         dodabump = [False, self.vx]
         for i in range(self.steps):#Does physics 10 times to be sure to not phase through anything.
         #Gravity stuff
-            if thing.collision(self.MID,self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,0):#THE FLOOR
+            if thing.mapcollision(self.MID,self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,0):#THE FLOOR
                 self.onGround = True
+                if self.vy > 20:
+                    self.vx = 0
+                    self.bump = 30
                 self.vy = 0
                 self.y = (int((self.y+self.ysize)/40))*40-self.ysize
                 if not self.wheeled:
                     self.wheeled = True
                     self.vx /= 2
-            if thing.collision(self.MID,self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,1):#Ceiling collision
+            if thing.mapcollision(self.MID,self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,1):#Ceiling collision
+                if self.vy < -20:
+                    self.vx = 0
+                    self.bump = 30
                 self.vy = 0
                 self.y = (int((self.y)/40))*40+40
                 
-            if thing.collision(self.MID,self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,2):#Wall left
+            if thing.mapcollision(self.MID,self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,2):#Wall left
                 self.x = (int((self.x+40)/40))*40
                 if self.vx < -15:
                     dodabump[0] = True
                 self.vx = 0
-            if thing.collision(self.MID,self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,3):#Wall right
+            if thing.mapcollision(self.MID,self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,3):#Wall right
                 self.x = (int((self.x+self.xsize)/40))*40-self.xsize
                 if self.vx > 15:
                     dodabump[0] = True

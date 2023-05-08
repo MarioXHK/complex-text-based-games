@@ -1,3 +1,4 @@
+from Collision import thing
 import pygame
 
 #Entity!
@@ -23,7 +24,7 @@ class entity:
         #How slippery the ground is
         self.defslip = self.slip
         #The default value for self.slip, cannot be changed
-        
+        self.MID = [[[]]]
         self.onGround = True
         self.wheeled = True
         self.steps = 5
@@ -33,27 +34,44 @@ class entity:
             self.xsize = 60
             self.ysize = 40
             self.vx = 3
+        elif name == "slime":
+            self.xsize = 50
+            self.ysize = 60
+            self.vx = 4
+        elif name == "cherry":
+            self.vx = 6
+    def getmap(self,idk):
+        self.MID = idk
     def move(self):
         if self.held:
             return
         self.onGround = False
-        for i in range(self.steps):#Does physics 10 times to be sure to not phase through anything.
         #Gravity stuff
-            if collision(self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,0):#THE FLOOR
+        if not thing.mapcollision(self.MID,self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,0):
+            self.vy += .3
+        for i in range(self.steps):#Does physics steps times to be sure to not phase through anything.
+            if thing.mapcollision(self.MID,self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,0):#THE FLOOR
                 self.onGround = True
                 self.vy = 0
                 self.y = (int((self.y+self.ysize)/40))*40-self.ysize
-            if collision(self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,1):#Ceiling collision
+                if self.type == "cherry":
+                    if (thing.mapcollision(self.MID,self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,2) or thing.mapcollision(self.MID,self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,3)):
+                        self.vy -= 7
+            if thing.mapcollision(self.MID,self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,1):#Ceiling collision
                 self.vy = 0
                 self.y = (int((self.y)/40))*40+40
                 
-            if collision(self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,2):#Wall left
+            if thing.mapcollision(self.MID,self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,2):#Wall left
                 self.x = (int((self.x+40)/40))*40
                 self.vx = 0-self.vx
-            if collision(self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,3):#Wall right
+            if thing.mapcollision(self.MID,self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,3):#Wall right
                 self.x = (int((self.x+self.xsize)/40))*40-self.xsize
                 self.vx = 0-self.vx
-                    
+            if thing.mapcollision(self.MID,self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,5) == 1:#On surface edge
+                if self.type == "cheese":
+                    self.vx = 0-self.vx
+                elif self.type == "cherry":
+                    self.vy -= 7
             self.fasterDown = False
             self.x += self.vx/self.steps
             self.y += self.vy/self.steps
@@ -62,10 +80,12 @@ class entity:
                 self.slip = self.defslip
             else:
                 self.slip = self.defslip/3
-    def draw(self, off, zoom = 1):
+    def draw(self, Screen, off, zoom = 1):
         color = (100, 100, 100)
-        if self.name == "cheese":
+        if self.type == "cheese":
             color = (200, 200, 100)
-        elif self.name == "slime":
+        elif self.type == "slime":
             color = (50, 200, 100)
-        pygame.draw.rect(screen, color, (self.x*zoom-off[0], self.y*zoom-off[1], self.xsize*zoom, self.ysize*zoom))
+        elif self.type == "cherry":
+            color = (200, 75, 75)
+        pygame.draw.rect(Screen, color, (self.x*zoom-off[0], self.y*zoom-off[1], self.xsize*zoom, self.ysize*zoom))
