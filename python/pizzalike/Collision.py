@@ -28,6 +28,7 @@ class thing:
         return False
     def objcollision(obj1,obj2,kind):
         #It takes 2 object's x, y, h, and v values and turns them into a list in that order, obj1 being the object trying to collide
-        if int(obj1[0]) in range(int(obj2[0]),int(obj2[0]+obj2[2])) or int(obj1[0]+obj1[2]) in range(int(obj2[0]),int(obj2[0]+obj2[2])) or int(obj1[0]+obj1[2]/2) in range(int(obj2[0]),int(obj2[0]+obj2[2])):
+        if (int(obj1[0]) in range(int(obj2[0]),int(obj2[0]+obj2[2])) or int(obj1[0]+obj1[2]) in range(int(obj2[0]),int(obj2[0]+obj2[2])) or int(obj1[0]+obj1[2]/2) in range(int(obj2[0]),int(obj2[0]+obj2[2]))) and (int(obj1[1]) in range(int(obj2[1]),int(obj2[1]+obj2[3])) or int(obj1[1]+obj1[3]) in range(int(obj2[1]),int(obj2[1]+obj2[3])) or int(obj1[0]+obj1[2]/2) in range(int(obj2[1]),int(obj2[1]+obj2[3]))):
             print("hi")
             print(random.randint(1,10))
+            
