@@ -97,7 +97,6 @@ class player:#THE PLAYER OF THE GAME
         if self.onGround:
             if self.groundpound:
                 self.vy = -12
-                self.vx /= 2
             else:
                 self.vy = -10
     def duck(self, sneak):
@@ -130,14 +129,16 @@ class player:#THE PLAYER OF THE GAME
             
             if goinup and self.wheeled and not self.crouch:
                 self.wheeled = False
-                self.vx *= 1.2
+                if abs(self.vx) < 12:
+                    self.vx *= 1.2
                 self.vy = -7
                 if not (a or o):#If you just want to dash up
                     self.vx = prex
                     self.vy -= 3
             elif goingdown and not (goinup or self.onGround):
                 self.groundpound = True
-                self.vx *= 1.2
+                if abs(self.vx) < 12:
+                    self.vx *= 1.2
                 self.vy = 12
                 if not (a or o):#If you just ground pound
                     self.vx = prex

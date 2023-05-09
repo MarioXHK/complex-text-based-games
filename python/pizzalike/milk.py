@@ -1,6 +1,5 @@
 import pygame
 import Mapgen
-from math import sqrt
 from Player import player
 from Things import entity
 from Collision import thing
@@ -13,7 +12,7 @@ screen.fill((0,0,0))
 clock = pygame.time.Clock()#set up clock
 
 
-
+ms = Maps.getmapsize(0)
 
     
 
@@ -123,7 +122,9 @@ while gaming:
     
     for i in range(len(enemies)):
         enemies[i].move()
-        thing.objcollision(players[0].getinf(),enemies[i].getinf(),1)
+        for j in range(len(players)):
+            if thing.objcollision(players[j].getinf(),enemies[i].getinf(),0) and players[j].pound and not enemies[i].flang:
+                enemies[i].fling(10)
     #4 later
     pdisx = []
     pdisy = []

@@ -1,5 +1,6 @@
 from Collision import thing
 import pygame
+import random
 
 #Entity!
 class entity:
@@ -19,7 +20,8 @@ class entity:
         #Entity's Vertical Size
         self.held = False
         #If the entity is being held
-        
+        self.flang = False
+        #If the enemy is flinged
         self.slip = 0.5
         #How slippery the ground is
         self.defslip = self.slip
@@ -44,13 +46,25 @@ class entity:
         self.MID = idk
     def getinf(self):
         return (self.x,self.y,self.xsize,self.ysize)
+    def fling(self,hard):
+        self.flang = True
+        r = random.randint(0,10)
+        f = hard+r
+        self.vx = random.randint(0,int(f))
+        self.vy = 0-((hard+r)-self.vx)
+        if random.randrange(0,2) == 0:
+            self.vx *= -1
     def move(self):
-        if self.held:
+        if self.held or self.flang:
+            if self.flang:
+                self.vy += 0.3
+                self.x += self.vx
+                self.y += self.vy
             return
         self.onGround = False
         #Gravity stuff
         if not thing.mapcollision(self.MID,self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,0):
-            self.vy += .3
+            self.vy += 1
         for i in range(self.steps):#Does physics steps times to be sure to not phase through anything.
             if thing.mapcollision(self.MID,self.x,self.y,self.xsize,self.ysize,self.vx,self.vy,0):#THE FLOOR
                 self.onGround = True

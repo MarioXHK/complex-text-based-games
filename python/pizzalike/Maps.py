@@ -51,3 +51,5 @@ def getmap(t, simple = True):
         return Map(t)
     else:
         return Mapgen.coolgen(Map(t))
+def getmapsize(t):
+    return (len(Map(t)[0])*40,len(Map(t)*40))

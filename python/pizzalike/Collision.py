@@ -1,6 +1,11 @@
 import Maps
 import random
 
+def overlap(a,b):
+    return a[0] <= b[0] <= a[1] or b[0] <= a[0] <= b[1]
+def gib(obj,e = 0):
+    return (obj[0+e]+obj[2+e])
+
 class thing:
     #Setting up collision function!
     def mapcollision(MAP,x,y,h,v,vx,vy,kind,duck = False):
@@ -28,7 +33,8 @@ class thing:
         return False
     def objcollision(obj1,obj2,kind):
         #It takes 2 object's x, y, h, and v values and turns them into a list in that order, obj1 being the object trying to collide
-        if (int(obj1[0]) in range(int(obj2[0]),int(obj2[0]+obj2[2])) or int(obj1[0]+obj1[2]) in range(int(obj2[0]),int(obj2[0]+obj2[2])) or int(obj1[0]+obj1[2]/2) in range(int(obj2[0]),int(obj2[0]+obj2[2]))) and (int(obj1[1]) in range(int(obj2[1]),int(obj2[1]+obj2[3])) or int(obj1[1]+obj1[3]) in range(int(obj2[1]),int(obj2[1]+obj2[3])) or int(obj1[0]+obj1[2]/2) in range(int(obj2[1]),int(obj2[1]+obj2[3]))):
-            print("hi")
-            print(random.randint(1,10))
+        if overlap((obj1[0],gib(obj1)),(obj2[0],gib(obj2))) and overlap((obj1[1],gib(obj1,1)),(obj2[1],gib(obj2,1))):
+            if kind == 0:
+                return True
+        return False
             
