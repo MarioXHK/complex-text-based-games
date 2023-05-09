@@ -3,6 +3,7 @@ import Mapgen
 from math import sqrt
 from Player import player
 from Things import entity
+from Collision import thing
 import Maps
 #set up pygame stuff
 pygame.init()  
@@ -98,7 +99,9 @@ while gaming:
             if event.key == pygame.K_SPACE:
                 debug=False
     clock.tick(60)
+    
     #PLAYER INPUT!!!
+    
     for i in range(len(players)):
         players[i].controlling = False#For when the player isn't controlling
         if keys[i][4]:
@@ -112,12 +115,15 @@ while gaming:
             players[i].controlhorz(True,keys[i][5])
         if keys[i][6]:
             players[i].punch(keys[i][0],keys[i][1],keys[i][2],keys[i][3])
+    
     #THE LAWS OF PHYSICS AKA HOW STUFF MOVES!
+    
         players[i].move()
         players[i].retick()
+    
     for i in range(len(enemies)):
         enemies[i].move()
-    
+        thing.objcollision(players[0].getinf(),enemies[i].getinf(),1)
     #4 later
     pdisx = []
     pdisy = []
@@ -125,7 +131,9 @@ while gaming:
         for i in range(len(players)-1):
             pdisx.append(int(abs(players[0].x-players[i+1].x)))
             pdisy.append(int(abs(players[0].y-players[i+1].y)))
+    
     #Scrolling?? Definetly
+    
     average = [0,0]
     for i in range(len(players)):
         average[0] += players[i].rx

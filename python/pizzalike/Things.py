@@ -42,6 +42,8 @@ class entity:
             self.vx = 6
     def getmap(self,idk):
         self.MID = idk
+    def getinf(self):
+        return (self.x,self.y,self.xsize,self.ysize)
     def move(self):
         if self.held:
             return

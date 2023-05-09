@@ -62,6 +62,8 @@ class player:#THE PLAYER OF THE GAME
         #How many loops to preform collision checks
     def getmap(self,idk):
         self.MID = idk
+    def getinf(self):
+        return (self.x,self.y,self.xsize,self.ysize)
     def controlhorz(self,dirr,run):
         self.controlling = True
         self.lastDone = dirr

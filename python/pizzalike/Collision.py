@@ -1,4 +1,6 @@
 import Maps
+import random
+
 class thing:
     #Setting up collision function!
     def mapcollision(MAP,x,y,h,v,vx,vy,kind,duck = False):
@@ -26,5 +28,6 @@ class thing:
         return False
     def objcollision(obj1,obj2,kind):
         #It takes 2 object's x, y, h, and v values and turns them into a list in that order, obj1 being the object trying to collide
-        if obj1[0] in range(obj2[0],(obj2[0]+obj2[2])):
+        if int(obj1[0]) in range(int(obj2[0]),int(obj2[0]+obj2[2])) or int(obj1[0]+obj1[2]) in range(int(obj2[0]),int(obj2[0]+obj2[2])) or int(obj1[0]+obj1[2]/2) in range(int(obj2[0]),int(obj2[0]+obj2[2])):
             print("hi")
+            print(random.randint(1,10))
