@@ -114,7 +114,9 @@ class player:#THE PLAYER OF THE GAME
                 self.oy += 20
         self.crouch = sneak
     def speed(self):
-        return self.vx+self.vy
+        return abs(self.vx)+abs(self.vy)
+    def getdir(self):
+        return self.vx >= 0
     def punch(self,a,o,goinup,goingdown):
         prex = self.vx
         did = False

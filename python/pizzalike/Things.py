@@ -46,13 +46,15 @@ class entity:
         self.MID = idk
     def getinf(self):
         return (self.x,self.y,self.xsize,self.ysize)
-    def fling(self,hard):
+    def fling(self,hard,direct):
         self.flang = True
-        r = random.randint(-5,5)
+        r = random.randint(-10,10)
         f = abs(hard+r)
+        if f == 0:
+            f = 1
         self.vx = random.randint(1,f)
         self.vy = 0-(f-self.vx)
-        if hard < 0:
+        if not direct:
             self.vx *= -1
     def move(self):
         if self.held or self.flang:

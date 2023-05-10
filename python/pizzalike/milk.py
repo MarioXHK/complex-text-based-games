@@ -4,6 +4,7 @@ from Player import player
 from Things import entity
 from Collision import thing
 import Maps
+import random
 #set up pygame stuff
 pygame.init()  
 pygame.display.set_caption("Pizzalike Platformer")  # sets the window title
@@ -49,7 +50,8 @@ map = Maps.getmap(mapID, False)
 print(Mapgen.scanspawn(Maps.getmap(mapID),9))
 
 enemies = [entity(760, 1300,"cheese"),entity(560, 1300,"slime"),entity(720, 1080,"cherry"),entity(4280, 1480,"cheese"),entity(4280, 1480,"cherry"),entity(4180, 1480,"cherry"),entity(4080, 1480,"cherry"),entity(3980, 1480,"cherry"),entity(3880, 1480,"cherry")]
-
+for a in range(100):
+    enemies.append(entity(random.randint(1000,4000), 1480,"cheese"))
 for o in range(len(players)-1):
     keys.append(keys[0])
 for i in range(len(players)):
@@ -124,7 +126,8 @@ while gaming:
         enemies[i].move()
         for j in range(len(players)):
             if thing.objcollision(players[j].getinf(),enemies[i].getinf(),0) and players[j].pound and not enemies[i].flang:
-                enemies[i].fling(int(players[j].speed()))
+                enemies[i].fling(int(players[j].speed()),players[j].getdir())
+
     #4 later
     pdisx = []
     pdisy = []
