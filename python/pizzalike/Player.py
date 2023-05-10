@@ -46,7 +46,7 @@ class player:#THE PLAYER OF THE GAME
         self.idc = 2
         #How much the player's max speed can really do
         
-        self.vmod = 1
+        self.vmod = 5
         #How fast can the player run's modifier
         
         self.wheeled = True
@@ -97,6 +97,7 @@ class player:#THE PLAYER OF THE GAME
         if self.onGround:
             if self.groundpound:
                 self.vy = -12
+                self.groundpound = False
             else:
                 self.vy = -10
     def duck(self, sneak):
@@ -112,37 +113,54 @@ class player:#THE PLAYER OF THE GAME
                 self.y -= 20
                 self.oy += 20
         self.crouch = sneak
+    def speed(self):
+        return self.vx+self.vy
     def punch(self,a,o,goinup,goingdown):
         prex = self.vx
-        if self.punchcd == 0:
-            self.pound = True
-            self.vy = 0
-            self.punchcd = 60
-            self.touchedGround = False
-            if abs(self.vx) > 7:
-                self.vx *= 1.2
-            else:
-                if self.lastDone:
-                    self.vx = 8
+        did = False
+        mp = 1.2
+        if self.wheeled:
+            if self.punchcd == 0:
+                did = True
+                self.pound = True
+                self.vy = 0
+                self.touchedGround = False
+                if abs(self.vx) > 7:
+                    self.vx *= mp
                 else:
-                    self.vx = -8
-            
-            if goinup and self.wheeled and not self.crouch:
-                self.wheeled = False
-                if abs(self.vx) < 12:
-                    self.vx *= 1.2
-                self.vy = -7
-                if not (a or o):#If you just want to dash up
-                    self.vx = prex
-                    self.vy -= 3
-            elif goingdown and not (goinup or self.onGround):
-                self.groundpound = True
-                if abs(self.vx) < 12:
-                    self.vx *= 1.2
-                self.vy = 12
-                if not (a or o):#If you just ground pound
-                    self.vx = prex
-                    self.vy = 20
+                    if self.lastDone:
+                        self.vx = 8
+                    else:
+                        self.vx = -8
+            if self.punchcd < 30 and ((goinup and not self.crouch) or (goingdown and not (goinup or self.onGround))):
+                did = True
+                if self.punchcd != 0:
+                    mp = 1.4
+                    self.pound = True
+                    self.touchedGround = False
+                if goinup and not self.crouch:
+                    self.wheeled = False
+                    if abs(self.vx) < 12:
+                        self.vx *= mp
+                    self.vy = -7
+                    if not (a or o):#If you just want to dash up
+                        self.vx = prex * 1/(mp-0.1)
+                        self.vy -= 3
+                else:
+                    self.groundpound = True
+                    if abs(self.vx) < 5:
+                        if self.lastDone:
+                            self.vx = 6
+                        else:
+                            self.vx = -6
+                    elif abs(self.vx) < 10:
+                        self.vx *= mp
+                    self.vy = 12
+                    if not (a or o):#If you just ground pound
+                        self.vx = prex/2
+                        self.vy = 20
+            if did:
+                self.punchcd = 60
     def retick(self):
         #Pre-render maths and some other scripts that update the player that don't involve moving (good for when the game is pawused)
         self.rx = self.x + self.ox
@@ -178,7 +196,7 @@ class player:#THE PLAYER OF THE GAME
                 if self.vx > -0.1:
                     self.vx = 0
         
-        if abs(self.vx) > 12:
+        if abs(self.vx) > 15:
             self.pound = True
         
         

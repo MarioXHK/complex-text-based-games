@@ -48,7 +48,7 @@ mapID = 0
 map = Maps.getmap(mapID, False)
 print(Mapgen.scanspawn(Maps.getmap(mapID),9))
 
-enemies = [entity(760, 1300,"cheese"),entity(560, 1300,"slime"),entity(720, 1080,"cherry")]
+enemies = [entity(760, 1300,"cheese"),entity(560, 1300,"slime"),entity(720, 1080,"cherry"),entity(4280, 1480,"cheese"),entity(4280, 1480,"cherry"),entity(4180, 1480,"cherry"),entity(4080, 1480,"cherry"),entity(3980, 1480,"cherry"),entity(3880, 1480,"cherry")]
 
 for o in range(len(players)-1):
     keys.append(keys[0])
@@ -124,7 +124,7 @@ while gaming:
         enemies[i].move()
         for j in range(len(players)):
             if thing.objcollision(players[j].getinf(),enemies[i].getinf(),0) and players[j].pound and not enemies[i].flang:
-                enemies[i].fling(10)
+                enemies[i].fling(int(players[j].speed()))
     #4 later
     pdisx = []
     pdisy = []

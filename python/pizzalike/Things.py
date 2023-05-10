@@ -48,11 +48,11 @@ class entity:
         return (self.x,self.y,self.xsize,self.ysize)
     def fling(self,hard):
         self.flang = True
-        r = random.randint(0,10)
-        f = hard+r
-        self.vx = random.randint(0,int(f))
-        self.vy = 0-((hard+r)-self.vx)
-        if random.randrange(0,2) == 0:
+        r = random.randint(-5,5)
+        f = abs(hard+r)
+        self.vx = random.randint(1,f)
+        self.vy = 0-(f-self.vx)
+        if hard < 0:
             self.vx *= -1
     def move(self):
         if self.held or self.flang:
