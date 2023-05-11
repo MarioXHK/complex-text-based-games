@@ -8,17 +8,22 @@ import random
 #set up pygame stuff
 pygame.init()  
 pygame.display.set_caption("Pizzalike Platformer")  # sets the window title
-screen = pygame.display.set_mode((800, 800))  # creates game screen
+screenH = 1000
+screenV = 600
+SHH = screenH/2
+SHV = screenV/2
+screen = pygame.display.set_mode((screenH, screenV))  # creates game screen
 screen.fill((0,0,0))
 clock = pygame.time.Clock()#set up clock
 
 
 ms = Maps.getmapsize(0)
+print(ms)
 
-    
 
-
-#Setting up the classes
+#Function to check if something is in view. If it isn't, it'll return false
+def checkifoff(ent,off,SH,SV):
+    return ent.x >= off[0]-100 and ent.y >= off[1]-100 and ent.x <= off[0]+(SH+100) and ent.y <= off[1]+(SV+100)
 
 
 
@@ -38,7 +43,7 @@ offset = [0,0]
 dozooming = False #if true, zooming will be enabled
 #MAP: 1 is grass, 2 is brick
 
-ground = pygame.image.load('ground.png')
+ground = pygame.image.load('tilesets/ground.png')
 ground = pygame.transform.scale(ground, (400,400))
 players = [player(640,1440,"w")]#THe player you play as
 p1dom = 1 #How much player 1 has dominance over scrolling
@@ -51,7 +56,11 @@ print(Mapgen.scanspawn(Maps.getmap(mapID),9))
 
 enemies = [entity(760, 1300,"cheese"),entity(560, 1300,"slime"),entity(720, 1080,"cherry"),entity(4280, 1480,"cheese"),entity(4280, 1480,"cherry"),entity(4180, 1480,"cherry"),entity(4080, 1480,"cherry"),entity(3980, 1480,"cherry"),entity(3880, 1480,"cherry")]
 for a in range(100):
-    enemies.append(entity(random.randint(1000,4000), 1480,"cheese"))
+    enemies.append(entity(random.randint(500,4000), 1480,"cherry"))
+for a in range(200):
+    enemies.append(entity(random.randint(500,3000), 1480,"slime"))
+for a in range(400):
+    enemies.append(entity(random.randint(500,3500), 1480,"cheese"))
 for o in range(len(players)-1):
     keys.append(keys[0])
 for i in range(len(players)):
@@ -120,13 +129,20 @@ while gaming:
     #THE LAWS OF PHYSICS AKA HOW STUFF MOVES!
     
         players[i].move()
+        if players[i].y > ms[1]:
+            players[i].repos(640,1440)
         players[i].retick()
-    
+    uhm = 0
     for i in range(len(enemies)):
-        enemies[i].move()
-        for j in range(len(players)):
-            if thing.objcollision(players[j].getinf(),enemies[i].getinf(),0) and players[j].pound and not enemies[i].flang:
-                enemies[i].fling(int(players[j].speed()),players[j].getdir())
+        g = i-uhm
+        if checkifoff(enemies[g],offset,screenH,screenV) or enemies[g].flang:
+            enemies[g].move()
+            for j in range(len(players)):
+                if thing.objcollision(players[j].getinf(),enemies[g].getinf(),0) and players[j].pound and not enemies[g].flang:
+                    enemies[g].fling(int(players[j].speed()),players[j].getdir())
+        if enemies[g].y > ms[1]:
+            del enemies[g]
+            uhm += 1
 
     #4 later
     pdisx = []
@@ -147,18 +163,18 @@ while gaming:
         average[1] += players[0].ry
     average[0] = average[0]/(len(players)+p1dom)
     average[1] = average[1]/(len(players)+p1dom)
-    if average[0] > 400*(1/zoom) and average[0] < len(map[0])*40-(400*(1/zoom)):
-        offset[0] = (average[0] - 400)*zoom+(400*(zoom-1))
-    elif average[0] > 400*(1/zoom):
-        offset[0] = ((len(map[0])*40-(400*(1/zoom)))*zoom+(400*zoom*-1))-(400*(1-zoom))
+    if average[0] > SHH*(1/zoom) and average[0] < len(map[0])*40-(SHH*(1/zoom)):
+        offset[0] = (average[0] - SHH)*zoom+(SHH*(zoom-1))
+    elif average[0] > SHH*(1/zoom):
+        offset[0] = ((len(map[0])*40-(SHH*(1/zoom)))*zoom+(SHH*zoom*-1))-(SHH*(1-zoom))
     else:
         offset[0] = 0
     
     
-    if average[1] > 400*(1/zoom) and average[1] < len(map)*40-(400*(1/zoom)):
-        offset[1] = (average[1] - 400)*zoom+(400*(zoom-1))
-    elif average[1] > 400*(1/zoom):
-        offset[1] = ((len(map)*40-(400*(1/zoom)))*zoom+(400*zoom*-1))-(400*(1-zoom))
+    if average[1] > SHV*(1/zoom) and average[1] < len(map)*40-(SHV*(1/zoom)):
+        offset[1] = (average[1] - SHV)*zoom+(SHV*(zoom-1))
+    elif average[1] > SHV*(1/zoom):
+        offset[1] = ((len(map)*40-(SHV*(1/zoom)))*zoom+(SHV*zoom*-1))-(SHV*(1-zoom))
     else:
         offset[1] = 0
     #ZOOMING?!?!?!?!? Is that even possible?
@@ -168,11 +184,11 @@ while gaming:
         maxdis = 900
         if len(players) > 1:
             for i in range(len(players)-1):
-                if pdisx[i] > 400 or pdisy[i] > 400:
+                if pdisx[i] > SHH or pdisy[i] > SHV:
                     if pdisx[i] > pdisy[i]:
-                        zoom = 1.5-pdisx[i]/800
+                        zoom = 1.5-pdisx[i]/screenH
                     else:
-                        zoom = 1.5-pdisy[i]/800
+                        zoom = 1.5-pdisy[i]/screenV
                     if zoom < 0.7:
                         zoom = 0.7
             
@@ -223,5 +239,8 @@ while gaming:
     for k in range(len(players)):
         players[k].draw(screen,offset,zoom)
     for i in range(len(enemies)):
-        enemies[i].draw(screen,offset,zoom)
+        if checkifoff(enemies[i],offset,screenH,screenV):
+            enemies[i].draw(screen,offset,zoom)
+    if debug:
+        pygame.draw.circle(screen,(255,0,0),(SHH,SHV),20)
     pygame.display.flip()

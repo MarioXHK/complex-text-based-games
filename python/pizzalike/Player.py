@@ -1,6 +1,11 @@
 from Collision import thing
 import pygame
-
+playeridle = pygame.image.load('player/idle.png')
+playerduck = pygame.image.load('player/duck.png')
+def rescale(imag):
+    return pygame.transform.scale(imag, (80,80))
+playeridle = rescale(playeridle)
+playerduck = rescale(playerduck)
 class player:#THE PLAYER OF THE GAME
     def __init__(self, startx, starty, name = "nul"):
         self.name = name
@@ -23,26 +28,42 @@ class player:#THE PLAYER OF THE GAME
         self.ox = 0
         self.oy = 0
         #The offset for the previous
+        
         self.touchedGround = True
+        #If the player has touched the ground (only turns false after the punch function)
         self.bump = 0
         #Cancel moving timer
+        
         self.punchcd = 0
+        #Punch timer
         
         self.controlling = False
         #If the player is being controlled
+        
         self.pound = False
         #If the player is in a state to knock enemies out
+        
         self.groundpound = False
         #If the player should continue to be dangerous in the air
+        
         self.slip = 0.5
         #How slippery the ground is
+        
         self.defslip = self.slip
         #The default value for self.slip, cannot be changed
-        self.lastDone = False#The last movement done
+        
+        self.lastDone = False
+        #The last movement done
+        
         self.fasterDown = False
+        #If the player lets go of jump soon
+        
         self.maxrun = 4
         #How fast can the player run
+        
         self.MID = [[[]]]
+        #Place to hold map
+        
         self.idc = 2
         #How much the player's max speed can really do
         
@@ -60,10 +81,17 @@ class player:#THE PLAYER OF THE GAME
         
         self.steps = 10
         #How many loops to preform collision checks
+        
+        self.state = "idle"
+        #The state of the player (Mostly determines the sprite)
     def getmap(self,idk):
         self.MID = idk
     def getinf(self):
         return (self.x,self.y,self.xsize,self.ysize)
+    def repos(self,nx,ny):
+        #Makes the player this position
+        self.x = nx
+        self.y = ny
     def controlhorz(self,dirr,run):
         self.controlling = True
         self.lastDone = dirr
@@ -167,7 +195,10 @@ class player:#THE PLAYER OF THE GAME
         #Pre-render maths and some other scripts that update the player that don't involve moving (good for when the game is pawused)
         self.rx = self.x + self.ox
         self.ry = self.y + self.oy
-        
+        if self.crouch:
+            self.state = "duck"
+        else:
+            self.state = "idle"
     def move(self):
         if self.onGround:
             self.touchedGround = True
@@ -255,11 +286,18 @@ class player:#THE PLAYER OF THE GAME
             self.vy = -5
             self.bump = 5
     def draw(self, Screen, off, zoom = 1):
-        color = (100, 100, 100)
-        if self.name == "w":
-            color = (100, 200, 100)
-        elif self.name == "m":
-            color = (200, 100, 100)
         if self.pound:
             pygame.draw.rect(Screen, (255,0,0), ((self.x*zoom-off[0])-2, (self.y*zoom-off[1])-2, self.xsize*zoom+4, self.ysize*zoom+4))
-        pygame.draw.rect(Screen, color, (self.x*zoom-off[0], self.y*zoom-off[1], self.xsize*zoom, self.ysize*zoom))
+        if zoom == 1:
+            if self.state == "duck":
+                Screen.blit(pygame.transform.flip(playerduck, not self.lastDone, False), (self.rx-off[0]-20, self.ry-(off[1]+20)))
+            else:
+                Screen.blit(pygame.transform.flip(playeridle, not self.lastDone, False), (self.rx-off[0]-20, self.ry-(off[1]+20)))
+        else:
+            color = (100, 100, 100)
+            if self.name == "w":
+                color = (100, 200, 100)
+            elif self.name == "m":
+                color = (200, 100, 100)
+            pygame.draw.rect(Screen, color, (self.x*zoom-off[0], self.y*zoom-off[1], self.xsize*zoom, self.ysize*zoom))
+        
