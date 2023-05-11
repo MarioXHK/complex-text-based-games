@@ -56,11 +56,11 @@ print(Mapgen.scanspawn(Maps.getmap(mapID),9))
 
 enemies = [entity(760, 1300,"cheese"),entity(560, 1300,"slime"),entity(720, 1080,"cherry"),entity(4280, 1480,"cheese"),entity(4280, 1480,"cherry"),entity(4180, 1480,"cherry"),entity(4080, 1480,"cherry"),entity(3980, 1480,"cherry"),entity(3880, 1480,"cherry")]
 for a in range(100):
-    enemies.append(entity(random.randint(500,4000), 1480,"cherry"))
+    enemies.append(entity(random.randint(500,4000), 1300,"cherry"))
 for a in range(200):
-    enemies.append(entity(random.randint(500,3000), 1480,"slime"))
+    enemies.append(entity(random.randint(500,4000), 1400,"slime"))
 for a in range(400):
-    enemies.append(entity(random.randint(500,3500), 1480,"cheese"))
+    enemies.append(entity(random.randint(500,4000), 1000,"cheese"))
 for o in range(len(players)-1):
     keys.append(keys[0])
 for i in range(len(players)):
