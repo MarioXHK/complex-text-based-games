@@ -8,8 +8,8 @@ import random
 #set up pygame stuff
 pygame.init()  
 pygame.display.set_caption("Pizzalike Platformer")  # sets the window title
-screenH = 1000
-screenV = 600
+screenH = 1920
+screenV = 1080
 SHH = screenH/2
 SHV = screenV/2
 screen = pygame.display.set_mode((screenH, screenV))  # creates game screen
