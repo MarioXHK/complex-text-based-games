@@ -28,7 +28,7 @@ print("I'm a cat")
 
 #Thing 1
 
-blb = float(input("how much can you bench press?\n"))
+blb = int(input("how much can you bench press?\n"))
 if blb < 10:
     print("Hmm... Maybe u should practice to get buffff1")
 elif blb >= 10 and blb <= 50:

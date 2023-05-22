@@ -39,7 +39,7 @@ def collision(xpos, ypos,sped):
         pygame.display.flip()
         winsound.Beep(240,sped)
         return 3
-    else:
+    elif xpos > 400 and ypos > 400:
         print("over blue button")
         pygame.draw.arc(screen, (0,0,255),(200,200,400,400),3*pi/2,pi*2,100)
         pygame.display.flip()
