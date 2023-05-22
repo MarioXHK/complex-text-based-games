@@ -352,7 +352,7 @@ warning = pygame.mixer.Sound('warning.mp3')
 unlock = pygame.mixer.Sound('endlessunlock.mp3')
 bossmusic = pygame.mixer.music.load('hosthoedown.mp3')
 
-debug = False
+debug = True
 dekey = [False]
 #gaem loop
 didyougetit = False
